@@ -1,0 +1,276 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    letter-spacing: -0.011em;
+  }
+}
+
+html.dark,
+html.dark body {
+  background-color: #0b0f19 !important;
+  color: #f1f5f9;
+}
+
+html.light,
+html.light body {
+  background-color: #f1f5f9 !important;
+  color: #0f172a;
+}
+
+/* Custom modern scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #253047;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #374463;
+}
+
+.light ::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+}
+
+.light ::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Hide scrollbar for tabs */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   GLOBAL THEME SYSTEM: Adaptive Classes across Customer, Staff, ERP & Admin
+   Dark palette:   Midnight Blue (#0b0f19, #111622, #151c2c, #1c253b, border: #222d42)
+   Light palette:  Soft Slate    (#f1f5f9, #ffffff, #f8fafc, border: #e2e8f0)
+───────────────────────────────────────────────────────────────────────────── */
+
+/* Full-page shell */
+.theme-shell {
+  @apply min-h-screen transition-colors duration-200;
+}
+.dark .theme-shell,
+html.dark .theme-shell {
+  background-color: #0b0f19;
+  color: #f1f5f9;
+}
+.light .theme-shell,
+html.light .theme-shell {
+  background-color: #f1f5f9;
+  color: #0f172a;
+}
+
+/* Top Navigation Header */
+.theme-header {
+  @apply sticky top-0 z-20 border-b backdrop-blur-md transition-colors duration-200;
+}
+.dark .theme-header,
+html.dark .theme-header {
+  background-color: rgba(15, 20, 31, 0.95);
+  border-color: #1e2638;
+  color: #f1f5f9;
+}
+.light .theme-header,
+html.light .theme-header {
+  background-color: rgba(255, 255, 255, 0.95);
+  border-color: #e2e8f0;
+  color: #0f172a;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+}
+
+/* Sidebars (ERP Staff & Super Admin) */
+.theme-sidebar {
+  @apply sticky top-0 h-screen shrink-0 border-r flex flex-col justify-between z-20 transition-all duration-300;
+}
+.dark .theme-sidebar,
+html.dark .theme-sidebar {
+  background-color: #111622;
+  border-color: #1e2638;
+  color: #cbd5e1;
+}
+.light .theme-sidebar,
+html.light .theme-sidebar {
+  background-color: #ffffff;
+  border-color: #e2e8f0;
+  color: #334155;
+}
+
+/* Primary Content Cards (Dashboard, Inventory, POS, Customer Menu cards) */
+.theme-card,
+.stocky-card {
+  @apply rounded-2xl border transition-all;
+}
+.dark .theme-card,
+html.dark .theme-card,
+.dark .stocky-card,
+html.dark .stocky-card {
+  background-color: #151c2c;
+  border-color: #222d42;
+  color: #e2e8f0;
+}
+.light .theme-card,
+html.light .theme-card,
+.light .stocky-card,
+html.light .stocky-card {
+  background-color: #ffffff;
+  border-color: #e2e8f0;
+  color: #1e293b;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05);
+}
+
+/* Inner / Sub-Cards */
+.theme-inner-card,
+.stocky-inner-card {
+  @apply rounded-xl border transition-all;
+}
+.dark .theme-inner-card,
+html.dark .theme-inner-card,
+.dark .stocky-inner-card,
+html.dark .stocky-inner-card {
+  background-color: #1c253b;
+  border-color: #25324d;
+  color: #cbd5e1;
+}
+.light .theme-inner-card,
+html.light .theme-inner-card,
+.light .stocky-inner-card,
+html.light .stocky-inner-card {
+  background-color: #f8fafc;
+  border-color: #e2e8f0;
+  color: #334155;
+}
+
+/* Tables */
+.theme-table-head,
+.stocky-table-head {
+  @apply text-[10px] font-bold uppercase tracking-wider border-b;
+}
+.dark .theme-table-head,
+html.dark .theme-table-head,
+.dark .stocky-table-head,
+html.dark .stocky-table-head {
+  background-color: #101624;
+  border-color: #222d42;
+  color: #94a3b8;
+}
+.light .theme-table-head,
+html.light .theme-table-head,
+.light .stocky-table-head,
+html.light .stocky-table-head {
+  background-color: #f8fafc;
+  border-color: #e2e8f0;
+  color: #64748b;
+}
+
+.theme-table-row,
+.stocky-table-row {
+  @apply transition-colors border-b;
+}
+.dark .theme-table-row,
+html.dark .theme-table-row,
+.dark .stocky-table-row,
+html.dark .stocky-table-row {
+  border-color: #1f293d;
+}
+.dark .theme-table-row:hover,
+html.dark .theme-table-row:hover,
+.dark .stocky-table-row:hover,
+html.dark .stocky-table-row:hover {
+  background-color: rgba(24, 33, 51, 0.6);
+}
+.light .theme-table-row,
+html.light .theme-table-row,
+.light .stocky-table-row,
+html.light .stocky-table-row {
+  border-color: #f1f5f9;
+}
+.light .theme-table-row:hover,
+html.light .theme-table-row:hover,
+.light .stocky-table-row:hover,
+html.light .stocky-table-row:hover {
+  background-color: #f8fafc;
+}
+
+/* Headings & Subheadings */
+.theme-heading,
+.stocky-heading {
+  @apply text-2xl font-black tracking-tight;
+}
+.dark .theme-heading,
+html.dark .theme-heading,
+.dark .stocky-heading,
+html.dark .stocky-heading {
+  color: #ffffff;
+}
+.light .theme-heading,
+html.light .theme-heading,
+.light .stocky-heading,
+html.light .stocky-heading {
+  color: #0f172a;
+}
+
+.theme-subheading,
+.stocky-subheading {
+  @apply text-xs mt-0.5;
+}
+.dark .theme-subheading,
+html.dark .theme-subheading,
+.dark .stocky-subheading,
+html.dark .stocky-subheading {
+  color: #94a3b8;
+}
+.light .theme-subheading,
+html.light .theme-subheading,
+.light .stocky-subheading,
+html.light .stocky-subheading {
+  color: #64748b;
+}
+
+/* Inputs & Forms */
+.theme-input,
+.stocky-input {
+  @apply w-full rounded-xl border px-3 py-2 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-amber-500;
+}
+.dark .theme-input,
+html.dark .theme-input,
+.dark .stocky-input,
+html.dark .stocky-input {
+  background-color: #101624;
+  border-color: #25324d;
+  color: #ffffff;
+}
+.light .theme-input,
+html.light .theme-input,
+.light .stocky-input,
+html.light .stocky-input {
+  background-color: #ffffff;
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
