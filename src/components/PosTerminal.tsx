@@ -199,9 +199,9 @@ export default function PosTerminal({
   };
 
   return (
-    <div className="flex flex-col lg:flex-row gap-6">
+    <div className="flex flex-col lg:flex-row gap-6 w-full min-w-0">
       {/* ─── LEFT: Product Catalog & Category Filters ─────────────────────── */}
-      <div className="flex-1 space-y-4">
+      <div className="flex-1 min-w-0 space-y-4">
         {/* Search & Header */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
           <div className="relative flex-1">

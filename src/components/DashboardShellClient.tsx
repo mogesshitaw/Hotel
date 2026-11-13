@@ -135,7 +135,7 @@ export function DashboardShellClient({
 
         {/* Dynamic Theme Content Body */}
         <main
-          className={`p-4 sm:p-6 lg:p-8 flex-1 transition-colors duration-200 ${
+          className={`p-4 sm:p-6 lg:p-8 flex-1 min-w-0 overflow-x-hidden transition-colors duration-200 ${
             isDark ? "bg-[#0b0f19]" : "bg-[#f1f5f9]"
           }`}
         >
