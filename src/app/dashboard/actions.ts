@@ -37,19 +37,45 @@ export async function createProduct(f: FormData) {
     },
   });
   revalidatePath("/dashboard/products");
+  revalidatePath(`/menu/${restaurant.slug}`);
 }
 
 export async function updateProduct(f: FormData) {
   const { restaurant } = await getRestaurantContext({ write: true });
-  const price = Number(f.get("price"));
+  const id = String(f.get("id"));
   const name = str(f, "name");
-  if (!name || !(price >= 0)) return;
-  // updateMany with restaurantId in the filter keeps writes inside the tenant.
+  const price = Number(f.get("price"));
+  if (!id || !name || !(price >= 0)) return;
+  const categoryId = str(f, "categoryId");
+  const description = str(f, "description");
+  const descriptionAm = str(f, "descriptionAm");
+  const imageUrl = str(f, "imageUrl");
+
   await prisma.product.updateMany({
-    where: { id: String(f.get("id")), restaurantId: restaurant.id },
-    data: { name, nameAm: str(f, "nameAm"), price },
+    where: { id, restaurantId: restaurant.id },
+    data: {
+      name,
+      nameAm: str(f, "nameAm"),
+      price,
+      categoryId: categoryId || null,
+      description: description || null,
+      descriptionAm: descriptionAm || null,
+      imageUrl: imageUrl || null,
+    },
   });
   revalidatePath("/dashboard/products");
+  revalidatePath(`/menu/${restaurant.slug}`);
+}
+
+export async function deleteProduct(f: FormData) {
+  const { restaurant } = await getRestaurantContext({ write: true });
+  const id = String(f.get("id"));
+  if (!id) return;
+  await prisma.product.deleteMany({
+    where: { id, restaurantId: restaurant.id },
+  });
+  revalidatePath("/dashboard/products");
+  revalidatePath(`/menu/${restaurant.slug}`);
 }
 
 export async function setProductState(f: FormData) {

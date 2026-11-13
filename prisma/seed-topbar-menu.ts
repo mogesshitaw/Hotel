@@ -1,0 +1,903 @@
+ import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
+
+async function main() {
+  console.log("🌱 Importing Top Bar full food & drink menu...");
+
+  // Find or create the restaurant
+  let restaurant = await prisma.restaurant.findUnique({
+    where: { slug: "fre-bar" },
+  });
+
+  if (!restaurant) {
+    restaurant = await prisma.restaurant.create({
+      data: {
+        name: "Top Bar & Restaurant",
+        nameAm: "ቶፕ ባር እና ሬስቶራንት",
+        slug: "fre-bar",
+        description: "Delicious Ethiopian traditional dishes, fast food, grilled meats, wines & liquors.",
+        phone: "+251911000000",
+        currency: "ETB",
+      },
+    });
+  } else {
+    // Optionally update name to reflect Top Bar
+    await prisma.restaurant.update({
+      where: { id: restaurant.id },
+      data: {
+        name: "Top Bar & Restaurant",
+        nameAm: "ቶፕ ባር እና ሬስቶራንት",
+      },
+    });
+  }
+
+  const restaurantId = restaurant.id;
+
+  // Define categories
+  const categoryDefs = [
+    { name: "Breakfast", nameAm: "ቁርስ", sortOrder: 1 },
+    { name: "Lunch & Traditional", nameAm: "ምሳ እና ባህላዊ ምግቦች", sortOrder: 2 },
+    { name: "Fish & Salads", nameAm: "አሳ እና ሰላጣ", sortOrder: 3 },
+    { name: "Burgers & Pizza", nameAm: "በርገር እና ፒዛ", sortOrder: 4 },
+    { name: "Drinks & Beer", nameAm: "መጠጦች እና ቢራ", sortOrder: 5 },
+    { name: "Wines", nameAm: "ወይን", sortOrder: 6 },
+    { name: "Liquor & Spirits", nameAm: "ውስኪ እና ቮድካ በጠርሙስ", sortOrder: 7 },
+  ];
+
+  const catMap: Record<string, string> = {};
+
+  for (const c of categoryDefs) {
+    const cat = await prisma.category.upsert({
+      where: {
+        restaurantId_name: {
+          restaurantId,
+          name: c.name,
+        },
+      },
+      update: {
+        nameAm: c.nameAm,
+        sortOrder: c.sortOrder,
+        isActive: true,
+      },
+      create: {
+        restaurantId,
+        name: c.name,
+        nameAm: c.nameAm,
+        sortOrder: c.sortOrder,
+        isActive: true,
+      },
+    });
+    catMap[c.name] = cat.id;
+  }
+
+  // Define all products
+  const products = [
+    // ─── 1. BREAKFAST (ቁርስ) ────────────────────────────────────────────────
+    {
+      category: "Breakfast",
+      name: "Tibs Firfir",
+      nameAm: "ጥብስ ፍርፍር",
+      price: 400,
+      description: "Crispy sautéed tender beef tossed with seasoned berbere shredded injera.",
+      descriptionAm: "በጥብስ የበሬ ስጋ እና ቅመማ ቅመም በበርበሬ የተዘጋጀ ፍርፍር።",
+      imageUrl: "https://images.unsplash.com/photo-1544025162-d76694265947?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Breakfast",
+      name: "Enkulal Firfir",
+      nameAm: "እንቁላል ፍርፍር",
+      price: 300,
+      description: "Ethiopian style scrambled eggs mixed with seasoned onions, peppers & injera.",
+      descriptionAm: "ከእንቁላል፣ ሽንኩርትና ቃሪያ ጋር ከእንጀራ ጋር የተዘጋጀ ፍርፍር።",
+      imageUrl: "https://images.unsplash.com/photo-1525351484163-7529414344d8?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Breakfast",
+      name: "Enkulal Sandwich",
+      nameAm: "እንቁላል ሳንድዊች",
+      price: 300,
+      description: "Scrambled eggs with fresh crusty bread, tomatoes and sweet peppers.",
+      descriptionAm: "ትኩስ እንቁላል በዳቦ ከቲማቲምና ቃሪያ ጋር።",
+      imageUrl: "https://images.unsplash.com/photo-1550547660-d9450f859349?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Breakfast",
+      name: "Firfir (Sils Firfir)",
+      nameAm: "ፍርፍር",
+      price: 250,
+      description: "Stir-fried shredded injera simmered in rich spicy berbere and tomato sauce.",
+      descriptionAm: "በባህላዊ የበርበሬ ስልስ የተዘጋጀ ጣፋጭ ፍርፍር።",
+      imageUrl: "https://images.unsplash.com/photo-1604382355076-af4b0eb60143?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Breakfast",
+      name: "Half-Half (Shiro & Firfir)",
+      nameAm: "ሀፍ ሀፍ",
+      price: 300,
+      description: "Savory chickpea flour stew (Shiro) paired with spicy injera firfir.",
+      descriptionAm: "ግማሽ ሽሮ እና ግማሽ ፍርፍር ጥምረት።",
+      imageUrl: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Breakfast",
+      name: "Goat Dulet",
+      nameAm: "የፍየል ዱለት",
+      price: 400,
+      description: "Spicy minced goat tripe and lean offal sautéed with niter kibbeh & mitmita.",
+      descriptionAm: "በቅቤ እና በሚጥሚጣ የተዘጋጀ የፍየል ዱለት።",
+      imageUrl: "https://images.unsplash.com/photo-1544025162-d76694265947?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Breakfast",
+      name: "Fasting Combo",
+      nameAm: "የጾም ኮምቦ",
+      price: 600,
+      description: "Collection of Ethiopian vegan dishes: shiro, lentils, gomen, split peas & salad.",
+      descriptionAm: "የተለያዩ የጾም ምግቦች ስብስብ (ሽሮ፣ ምስር፣ ጎመን፣ አሊቻ እና ሰላጣ)።",
+      imageUrl: "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Breakfast",
+      name: "Non-Fasting Combo",
+      nameAm: "የፍስክ ኮምቦ",
+      price: 800,
+      description: "Collection of Ethiopian meat favorites: doro wat, beef tibs, key wat and egg.",
+      descriptionAm: "የተለያዩ የስጋ ምግቦች ስብስብ (ዶሮ ወጥ፣ የበሬ ጥብስ፣ ቀይ ወጥ እና እንቁላል)።",
+      imageUrl: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Breakfast",
+      name: "Shiro Stew",
+      nameAm: "ሽሮ",
+      price: 250,
+      description: "Slow-simmered spiced ground chickpea stew served piping hot with injera.",
+      descriptionAm: "በነጭ ሽንኩርት እና በበርበሬ የተዘጋጀ ትኩስ ሽሮ ወጥ።",
+      imageUrl: "https://images.unsplash.com/photo-1589302168068-964664d93dc0?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Breakfast",
+      name: "Spaghetti with Vegetable / Tomato",
+      nameAm: "ፓስታ",
+      price: 250,
+      description: "Italian spaghetti tossed in sautéed seasonal vegetables or homemade tomato sauce.",
+      descriptionAm: "ፓስታ በቲማቲም ወይም አትክልት ስልስ።",
+      imageUrl: "https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Breakfast",
+      name: "Rice with Vegetable / Tomato",
+      nameAm: "ሩዝ",
+      price: 250,
+      description: "Steamed spiced aromatic rice tossed with fresh vegetable or tomato reduction.",
+      descriptionAm: "ሩዝ በቲማቲም ወይም በአትክልት ስልስ።",
+      imageUrl: "https://images.unsplash.com/photo-1512058564366-18510be2db19?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Breakfast",
+      name: "Spaghetti with Meat Sauce",
+      nameAm: "ፓስታ በስጋ",
+      price: 500,
+      description: "Spaghetti pasta topped with hearty seasoned minced beef Bolognese sauce.",
+      descriptionAm: "ፓስታ በጣፋጭ የበሬ ስጋ ስልስ።",
+      imageUrl: "https://images.unsplash.com/photo-1621996346565-e3d5d6281781?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Breakfast",
+      name: "Spaghetti with Tuna",
+      nameAm: "ፓስታ በቱና",
+      price: 500,
+      description: "Al dente spaghetti tossed with flaked tuna fish, olive oil, garlic and herbs.",
+      descriptionAm: "ፓስታ በቱና አሳ እና ቅመማ ቅመም።",
+      imageUrl: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Breakfast",
+      name: "Rice with Meat Sauce",
+      nameAm: "ሩዝ በስጋ",
+      price: 500,
+      description: "Fluffy steamed rice served with tender minced beef sauce.",
+      descriptionAm: "ሩዝ በተጠበሰ የበሬ ስጋ ስልስ።",
+      imageUrl: "https://images.unsplash.com/photo-1536304993881-ff6e9eefa2a6?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Breakfast",
+      name: "Rice with Tuna",
+      nameAm: "ሩዝ በቱና",
+      price: 500,
+      description: "Steamed seasoned rice accompanied with flaked tuna and peppers.",
+      descriptionAm: "ሩዝ በቱና አሳ ስልስ።",
+      imageUrl: "https://images.unsplash.com/photo-1512058564366-18510be2db19?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Breakfast",
+      name: "Special Tibis Firfir",
+      nameAm: "ስፔሻል ጥብስ ፍርፍር",
+      price: 500,
+      description: "Special tender beef fillet tibs firfir garnished with boiled egg and jalapeño.",
+      descriptionAm: "ልዩ የበሬ ጥብስ ፍርፍር ከቀቀለ እንቁላል እና ቃሪያ ጋር።",
+      imageUrl: "https://images.unsplash.com/photo-1544025162-d76694265947?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Breakfast",
+      name: "Canned Tuna Dish",
+      nameAm: "ቱና",
+      price: 4500,
+      description: "Whole portion imported tuna prepared with sliced onions, lemons and olive oil.",
+      descriptionAm: "የቱና አሳ ከሽንኩርት፣ ሎሚ እና የወይራ ዘይት ጋር።",
+      imageUrl: "https://images.unsplash.com/photo-1501595091296-3aa970afb3ff?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Breakfast",
+      name: "Beef and Egg Stir-Fry",
+      nameAm: "እንቁላል በስጋ",
+      price: 450,
+      description: "Minced beef and scrambled eggs stir-fried together with green peppers.",
+      descriptionAm: "የተፈጨ የበሬ ስጋ እና እንቁላል ጥብስ።",
+      imageUrl: "https://images.unsplash.com/photo-1525351484163-7529414344d8?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Breakfast",
+      name: "Tomato Sauce (Timatim Sils)",
+      nameAm: "ቲማቲም ስልስ",
+      price: 250,
+      description: "Spiced sautéed fresh tomatoes, garlic, onions, and mild green chili dip.",
+      descriptionAm: "በነጭ ሽንኩርት እና ቃሪያ የተዘጋጀ የቲማቲም ስልስ።",
+      imageUrl: "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=700&auto=format&fit=crop&q=80",
+    },
+
+    // ─── 2. LUNCH & TRADITIONAL (ምሳ እና ባህላዊ ምግቦች) ──────────────────────────
+    {
+      category: "Lunch & Traditional",
+      name: "1 Kilo Sauteed Goat Cubes (Yefiyel Qurt / Tibs)",
+      nameAm: "የፍየል ቁርጥ 1 ኪሎ",
+      price: 4000,
+      description: "One kilogram of tender fresh goat meat cubes served with spicy awaze & senafich.",
+      descriptionAm: "አንድ ኪሎ ትኩስ የፍየል ቁርጥ ስጋ ከአዋዜና ሰናፍጭ ጋር።",
+      imageUrl: "https://images.unsplash.com/photo-1544025162-d76694265947?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Lunch & Traditional",
+      name: "Half Kilo Sauteed Goat Cubes",
+      nameAm: "የፍየል ቁርጥ 1/2 ኪሎ",
+      price: 2000,
+      description: "Half kilogram of tender fresh goat meat cubes served with condiments.",
+      descriptionAm: "ግማሽ ኪሎ ትኩስ የፍየል ቁርጥ ስጋ።",
+      imageUrl: "https://images.unsplash.com/photo-1544025162-d76694265947?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Lunch & Traditional",
+      name: "1 Kilo Sizzling Clay Pot Goat Tibs",
+      nameAm: "ሽክላ ጥብስ 1 ኪሎ",
+      price: 4000,
+      description: "One kilogram sizzling goat meat served on an authentic charcoal clay burner.",
+      descriptionAm: "በሸክላ የተጠበሰ አንድ ኪሎ ትኩስ የፍየል ጥብስ።",
+      imageUrl: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Lunch & Traditional",
+      name: "Half Kilo Sizzling Clay Pot Goat Tibs",
+      nameAm: "ሽክላ ጥብስ 1/2 ኪሎ",
+      price: 2000,
+      description: "Half kilogram sizzling goat meat served with rosemary and green chilies.",
+      descriptionAm: "ግማሽ ኪሎ የሸክላ ፍየል ጥብስ።",
+      imageUrl: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Lunch & Traditional",
+      name: "Quarter Kilo Sizzling Clay Pot Goat Tibs",
+      nameAm: "ሽክላ ጥብስ 1/4 ኪሎ",
+      price: 1000,
+      description: "Single portion quarter kilo of sizzling goat tibs with injera.",
+      descriptionAm: "ሩብ ኪሎ የሸክላ ፍየል ጥብስ።",
+      imageUrl: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Lunch & Traditional",
+      name: "Gaze Light 1 Kilo Traditional Fried Goat",
+      nameAm: "ጋዝ ላይት 1 ኪሎ",
+      price: 4000,
+      description: "One kilogram flame-crisped goat meat stir-fried with fragrant spices.",
+      descriptionAm: "አንድ ኪሎ የጋዝ ላይት ጥብስ ፍየል ስጋ።",
+      imageUrl: "https://images.unsplash.com/photo-1544025162-d76694265947?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Lunch & Traditional",
+      name: "Gaze Light Half Kilo Traditional Fried Goat",
+      nameAm: "ጋዝ ላይት 1/2 ኪሎ",
+      price: 2000,
+      description: "Half kilo flame-crisped goat meat prepared to golden perfection.",
+      descriptionAm: "ግማሽ ኪሎ የጋዝ ላይት ጥብስ ፍየል ስጋ።",
+      imageUrl: "https://images.unsplash.com/photo-1544025162-d76694265947?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Lunch & Traditional",
+      name: "Chigna Tibs (Tenderloin Beef/Lamb)",
+      nameAm: "ጭቅና ጥብስ",
+      price: 700,
+      description: "Prime cut tenderloin sautéed with clarified spiced butter, onions & rosemary.",
+      descriptionAm: "ልዩ ለስላሳ የበሬ ጭቅና ጥብስ በቅቤና በሮዝመሪ።",
+      imageUrl: "https://images.unsplash.com/photo-1558030006-450675393462?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Lunch & Traditional",
+      name: "Quanta Firfir (Dried Beef)",
+      nameAm: "ቋንጣ ፍርፍር",
+      price: 400,
+      description: "Sun-dried seasoned beef strips shredded and stewed into berbere injera firfir.",
+      descriptionAm: "በባህላዊ የደረቀ የበሬ ቋንጣ ስጋ የተሰራ ፍርፍር።",
+      imageUrl: "https://images.unsplash.com/photo-1604382355076-af4b0eb60143?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Lunch & Traditional",
+      name: "Kitfo (Ethiopian Minced Raw/Leb-Leb Beef)",
+      nameAm: "ክትፎ",
+      price: 1000,
+      description: "Finely minced lean beef seasoned with mitmita and warm infused niter kibbeh.",
+      descriptionAm: "በልዩ ቅቤ እና በሚጥሚጣ የተዘጋጀ ትኩስ ክትፎ።",
+      imageUrl: "https://images.unsplash.com/photo-1544025162-d76694265947?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Lunch & Traditional",
+      name: "Half Kitfo",
+      nameAm: "ግማሽ ክትፎ",
+      price: 500,
+      description: "Half portion of traditional spiced kitfo served with injera or kocho.",
+      descriptionAm: "ግማሽ ፖርሽን ክትፎ።",
+      imageUrl: "https://images.unsplash.com/photo-1544025162-d76694265947?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Lunch & Traditional",
+      name: "Goat Kikile (Boiled Goat Soup with Bone)",
+      nameAm: "የፍየል ቅቅል",
+      price: 600,
+      description: "Slow-simmered goat bone soup flavored with turmeric, garlic, ginger and jalapeños.",
+      descriptionAm: "ሞቅ ያለ የፍየል ቅቅል መረቅ ከአጥንት ጋር።",
+      imageUrl: "https://images.unsplash.com/photo-1547592166-23ac45744acd?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Lunch & Traditional",
+      name: "Normal Dulet (Beef Dulet)",
+      nameAm: "ኖርማል ዱለት",
+      price: 400,
+      description: "Traditional minced beef, tripe and liver with mitmita, onions and hot pepper.",
+      descriptionAm: "የተፈጨ የበሬ ዱለት በቅቤና ሚጥሚጣ።",
+      imageUrl: "https://images.unsplash.com/photo-1544025162-d76694265947?w=700&auto=format&fit=crop&q=80",
+    },
+
+    // ─── 3. FISH & SALADS (አሳ እና ሰላጣ) ──────────────────────────────────────
+    {
+      category: "Fish & Salads",
+      name: "Fish Cutlet (Minced fish cutlet)",
+      nameAm: "ኮትሌት",
+      price: 700,
+      description: "Golden fried breaded Nile perch fish cutlets served with tartar dip.",
+      descriptionAm: "በዳቦ ዱቄት የተጠበሰ ጣፋጭ የአሳ ኮትሌት።",
+      imageUrl: "https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Fish & Salads",
+      name: "Fish Gulash",
+      nameAm: "አሳ ጉላሽ",
+      price: 600,
+      description: "Spicy fish fillets simmered in rich garlic, chili and tomato gulash sauce.",
+      descriptionAm: "በቲማቲምና በቅመማ ቅመም የተሰራ የአሳ ጉላሽ።",
+      imageUrl: "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Fish & Salads",
+      name: "Grilled Fish (Leb-Leb Seared Fish)",
+      nameAm: "አሳ ለብለብ",
+      price: 500,
+      description: "Lightly seared fresh fish fillet seasoned with herbs, lemon juice and pepper.",
+      descriptionAm: "በቀላል የተጠበሰ ትኩስ አሳ ከሎሚ ጋር።",
+      imageUrl: "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Fish & Salads",
+      name: "Tuna Wrap",
+      nameAm: "ቱና ራፕ",
+      price: 500,
+      description: "Flaked tuna with crisp lettuce, sliced tomatoes and mayonnaise wrapped in tortilla.",
+      descriptionAm: "የቱና አሳ ከሰላጣ እና ከቲማቲም ጋር በራፕ።",
+      imageUrl: "https://images.unsplash.com/photo-1509722747041-616f39b57569?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Fish & Salads",
+      name: "Vegetable Wrap",
+      nameAm: "አትክልት ራፕ",
+      price: 500,
+      description: "Crispy cucumber, tomatoes, bell peppers and shredded carrots with herb dressing.",
+      descriptionAm: "ትኩስ አትክልቶች በልዩ ድሬሲንግ የተዘጋጀ ራፕ።",
+      imageUrl: "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Fish & Salads",
+      name: "Avocado with Salad",
+      nameAm: "አቮካዶ በሰላጣ",
+      price: 350,
+      description: "Fresh sliced buttery avocado over crisp romaine lettuce, onions, and vinaigrette.",
+      descriptionAm: "ትኩስ አቮካዶ ከአትክልት ሰላጣ ጋር።",
+      imageUrl: "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=700&auto=format&fit=crop&q=80",
+    },
+
+    // ─── 4. BURGERS & PIZZA (በርገር እና ፒዛ) ───────────────────────────────────
+    {
+      category: "Burgers & Pizza",
+      name: "Normal Burger (Beef Burger)",
+      nameAm: "ኖርማል በርገር",
+      price: 450,
+      description: "Classic grilled beef burger patty with lettuce, tomatoes, onions and house sauce.",
+      descriptionAm: "የበሬ ስጋ በርገር ከአትክልትና ሶስ ጋር።",
+      imageUrl: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Burgers & Pizza",
+      name: "Cheese Burger",
+      nameAm: "ቺዝ በርገር",
+      price: 650,
+      description: "Grilled beef patty topped with melted cheddar cheese, pickles and sauce.",
+      descriptionAm: "የበሬ በርገር በሞቀ የቀለጠ ቺዝ።",
+      imageUrl: "https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Burgers & Pizza",
+      name: "Special Burger (Egg & Cheese)",
+      nameAm: "እስፔሻል በርገር",
+      price: 650,
+      description: "Loaded double burger topped with a fried egg, melted cheese, and extra toppings.",
+      descriptionAm: "ልዩ በርገር በተጠበሰ እንቁላል እና ቺዝ።",
+      imageUrl: "https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Burgers & Pizza",
+      name: "Classic Cheese Pizza",
+      nameAm: "ፒዛ",
+      price: 500,
+      description: "Thin crust stone-baked pizza with mozzarella cheese and Italian tomato sauce.",
+      descriptionAm: "ትኩስ የሞዛሬላ ቺዝ ፒዛ።",
+      imageUrl: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Burgers & Pizza",
+      name: "Vegetable Pizza",
+      nameAm: "አትክልት ፒዛ",
+      price: 500,
+      description: "Fresh pizza loaded with bell peppers, onions, tomatoes, mushrooms and olives.",
+      descriptionAm: "ፒዛ በተለያዩ ትኩስ አትክልቶች።",
+      imageUrl: "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Burgers & Pizza",
+      name: "Pizza with Tuna",
+      nameAm: "ፒዛ በቱና",
+      price: 600,
+      description: "Crispy pizza crust topped with flaked tuna fish, red onions and mozzarella.",
+      descriptionAm: "በቱና አሳ እና ሽንኩርት የተዘጋጀ ፒዛ።",
+      imageUrl: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Burgers & Pizza",
+      name: "Special Pizza",
+      nameAm: "እስፔሻል ፒዛ",
+      price: 700,
+      description: "House supreme pizza topped with ground beef, vegetables, boiled egg & extra cheese.",
+      descriptionAm: "ልዩ እስፔሻል ፒዛ በስጋ፣ እንቁላል እና አትክልት።",
+      imageUrl: "https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Burgers & Pizza",
+      name: "Chicken Cutlet",
+      nameAm: "የዶሮ ኮትሌት",
+      price: 700,
+      description: "Breaded golden-fried chicken breast served with crispy french fries.",
+      descriptionAm: "የተጠበሰ የዶሮ ኮትሌት ከቺፕስ ጋር።",
+      imageUrl: "https://images.unsplash.com/photo-1625938144755-652e08e359b7?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Burgers & Pizza",
+      name: "Special Wrap",
+      nameAm: "ስፔሻል ራፕ",
+      price: 700,
+      description: "Warm flatbread loaded with grilled tender chicken, egg, cheese and dressing.",
+      descriptionAm: "ልዩ ራፕ በዶሮ ስጋ፣ እንቁላል እና ቺዝ።",
+      imageUrl: "https://images.unsplash.com/photo-1509722747041-616f39b57569?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Burgers & Pizza",
+      name: "Chechebsa (Kita Firfir)",
+      nameAm: "ጨጨብሳ",
+      price: 300,
+      description: "Torn flatbread pan-fried in seasoned berbere and aromatic niter kibbeh.",
+      descriptionAm: "በባህላዊ ቅቤ እና በርበሬ የተዘጋጀ ጨጨብሳ።",
+      imageUrl: "https://images.unsplash.com/photo-1544025162-d76694265947?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Burgers & Pizza",
+      name: "Special Chechebsa",
+      nameAm: "ስፔሻል ጨጨብሳ",
+      price: 400,
+      description: "Rich chechebsa topped with pure honey, extra kibbeh and a fried egg.",
+      descriptionAm: "ልዩ ጨጨብሳ በማር፣ በቅቤ እና በእንቁላል።",
+      imageUrl: "https://images.unsplash.com/photo-1544025162-d76694265947?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Burgers & Pizza",
+      name: "Club Sandwich",
+      nameAm: "ክለብ ሳንድዊች",
+      price: 600,
+      description: "Triple-decker sandwich with chicken, boiled egg, cheese, lettuce and french fries.",
+      descriptionAm: "ክለብ ሳንድዊች በዶሮ ስጋ እና እንቁላል ከቺፕስ ጋር።",
+      imageUrl: "https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Burgers & Pizza",
+      name: "Egg Wrap",
+      nameAm: "እንቁላል ራፕ",
+      price: 400,
+      description: "Fluffy scrambled eggs, sliced tomatoes and spicy dressing rolled in flatbread.",
+      descriptionAm: "የእንቁላል ራፕ ከአትክልቶች ጋር።",
+      imageUrl: "https://images.unsplash.com/photo-1509722747041-616f39b57569?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Burgers & Pizza",
+      name: "French Fries (Chips)",
+      nameAm: "ቺፕስ",
+      price: 250,
+      description: "Crispy freshly fried potato chips sprinkled with seasoned salt.",
+      descriptionAm: "ትኩስ ጥርት ያለ ቺፕስ።",
+      imageUrl: "https://images.unsplash.com/photo-1576107232684-1279f3908594?w=700&auto=format&fit=crop&q=80",
+    },
+
+    // ─── 5. DRINKS & BEER (መጠጦች እና ቢራ) ──────────────────────────────────
+    {
+      category: "Drinks & Beer",
+      name: "Beer (Bottled Local Beer)",
+      nameAm: "ቢራ",
+      price: 100,
+      description: "Chilled bottled Ethiopian beer (Habesha, St. George, or Walia).",
+      descriptionAm: "ቀዝቃዛ የሀገር ውስጥ የታሸገ ቢራ።",
+      imageUrl: "https://images.unsplash.com/photo-1608270119277-2b73bc110609?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Drinks & Beer",
+      name: "Heineken Beer",
+      nameAm: "ሄይነከን ቢራ",
+      price: 150,
+      description: "Premium cold Heineken lager beer.",
+      descriptionAm: "ሄይነከን ቢራ በጠርሙስ።",
+      imageUrl: "https://images.unsplash.com/photo-1618886614638-80e3c153d31a?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Drinks & Beer",
+      name: "Arada Beer",
+      nameAm: "አራዳ ቢራ",
+      price: 150,
+      description: "Refreshing flavored malt & apple Arada beverage.",
+      descriptionAm: "አራዳ ቢራ ቀዝቃዛ።",
+      imageUrl: "https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Drinks & Beer",
+      name: "Bedele Special Beer",
+      nameAm: "በደሌ ስፔሻል",
+      price: 150,
+      description: "Classic rich Bedele Special bottled beer.",
+      descriptionAm: "በደሌ ስፔሻል ቢራ።",
+      imageUrl: "https://images.unsplash.com/photo-1535958636474-b021ee887b13?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Drinks & Beer",
+      name: "Jambo Draft Beer",
+      nameAm: "ጃምቦ ድራፍት",
+      price: 100,
+      description: "Freshly poured large glass mug of draft beer.",
+      descriptionAm: "ትልቅ የጃምቦ ድራፍት ቢራ።",
+      imageUrl: "https://images.unsplash.com/photo-1575037614876-c38a4d44f5b8?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Drinks & Beer",
+      name: "Single Draft Beer",
+      nameAm: "ሲንግል",
+      price: 70,
+      description: "Standard glass of freshly drawn draft beer.",
+      descriptionAm: "አንድ ሲንግል ድራፍት ቢራ።",
+      imageUrl: "https://images.unsplash.com/photo-1575037614876-c38a4d44f5b8?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Drinks & Beer",
+      name: "Soft Drink",
+      nameAm: "ለስላሳ",
+      price: 70,
+      description: "Coca-Cola, Fanta, Sprite, or Mirinda in glass bottle.",
+      descriptionAm: "ቀዝቃዛ ለስላሳ መጠጦች (ኮካ፣ ፋንታ፣ ስፕራይት)።",
+      imageUrl: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Drinks & Beer",
+      name: "Mineral Water 2L",
+      nameAm: "ውሃ 2 ሊትር",
+      price: 80,
+      description: "Pure bottled natural mineral drinking water 2 Liters.",
+      descriptionAm: "የታሸገ የተፈጥሮ የውሃ ጠርሙስ 2 ሊትር።",
+      imageUrl: "https://images.unsplash.com/photo-1548839140-29a749e1bc4e?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Drinks & Beer",
+      name: "Mineral Water 1L",
+      nameAm: "ውሃ 1 ሊትር",
+      price: 70,
+      description: "Pure bottled natural mineral drinking water 1 Liter.",
+      descriptionAm: "የታሸገ የተፈጥሮ ውሃ 1 ሊትር።",
+      imageUrl: "https://images.unsplash.com/photo-1548839140-29a749e1bc4e?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Drinks & Beer",
+      name: "Mineral Water 0.5L",
+      nameAm: "ውሃ 1/2 ሊትር",
+      price: 50,
+      description: "Pure bottled natural mineral drinking water half liter.",
+      descriptionAm: "የታሸገ የተፈጥሮ ውሃ ግማሽ ሊትር።",
+      imageUrl: "https://images.unsplash.com/photo-1548839140-29a749e1bc4e?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Drinks & Beer",
+      name: "Ethiopian Roast Coffee",
+      nameAm: "ቡና",
+      price: 50,
+      description: "Freshly brewed traditional ceremony Ethiopian highland coffee.",
+      descriptionAm: "ትኩስ የተቆላና የተፈጨ የሀበሻ ቡና።",
+      imageUrl: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Drinks & Beer",
+      name: "Spiced Tea",
+      nameAm: "ሻይ",
+      price: 50,
+      description: "Steaming hot black tea infused with cloves and cardamom.",
+      descriptionAm: "ትኩስ ቅመም ሻይ በክረንፉልና ሄል።",
+      imageUrl: "https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Drinks & Beer",
+      name: "Traditional Areki",
+      nameAm: "አርቂ",
+      price: 80,
+      description: "Pure homemade distilled traditional Ethiopian spirit shot.",
+      descriptionAm: "ንጹህ የሀገር ባህል አረቄ።",
+      imageUrl: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Drinks & Beer",
+      name: "Fresh Fruit Juice",
+      nameAm: "ጁስ",
+      price: 350,
+      description: "Freshly squeezed natural avocado, mango, papaya or mixed juice.",
+      descriptionAm: "ትኩስ የተፈጥሮ ፍራፍሬ ጁስ (አቮካዶ፣ ማንጎ፣ ፓፓያ)።",
+      imageUrl: "https://images.unsplash.com/photo-1613478223719-2ab802602423?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Drinks & Beer",
+      name: "Energy Drink / Cake",
+      nameAm: "ኤነርጂ ድሪንክ",
+      price: 80,
+      description: "Chilled energy drink or sweet baked cake snack.",
+      descriptionAm: "ቀዝቃዛ ኤነርጂ መጠጥ ወይም ጣፋጭ ኬክ።",
+      imageUrl: "https://images.unsplash.com/photo-1622543925917-763c34d1a86e?w=700&auto=format&fit=crop&q=80",
+    },
+
+    // ─── 6. WINES (ወይን) ──────────────────────────────────────────────────────
+    {
+      category: "Wines",
+      name: "Acacia Wine (Bottle)",
+      nameAm: "አካሻ ወይን",
+      price: 2000,
+      description: "Rift Valley Acacia premium medium-dry wine bottle.",
+      descriptionAm: "አካሻ የተመረጠ ወይን በጠርሙስ።",
+      imageUrl: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Wines",
+      name: "Awash Wine (Bottle)",
+      nameAm: "አዋሽ ወይን",
+      price: 700,
+      description: "Classic Ethiopian Awash dry/sweet table wine bottle.",
+      descriptionAm: "አዋሽ ወይን በጠርሙስ።",
+      imageUrl: "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Wines",
+      name: "Aksumawit Wine (Bottle)",
+      nameAm: "አክሱማዊት ወይን",
+      price: 1000,
+      description: "Sweet fortified red wine named after historic Axum.",
+      descriptionAm: "አክሱማዊት ጣፋጭ ቀይ ወይን በጠርሙስ።",
+      imageUrl: "https://images.unsplash.com/photo-1558001373-7b93ee48ffa0?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Wines",
+      name: "Kemila Wine (Bottle)",
+      nameAm: "ካሚላ ወይን",
+      price: 1000,
+      description: "Aromatic blend sweet Ethiopian red wine.",
+      descriptionAm: "ካሚላ ወይን በጠርሙስ።",
+      imageUrl: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Wines",
+      name: "Castel Wine",
+      nameAm: "ካስቴል ወይን",
+      price: 300,
+      description: "Glass or single serving of Castel Ethiopian winery wine.",
+      descriptionAm: "ካስቴል ወይን በአንድ ብርጭቆ።",
+      imageUrl: "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=700&auto=format&fit=crop&q=80",
+    },
+
+    // ─── 7. LIQUOR & SPIRITS (ውስኪ እና ቮድካ በጠርሙስ) ───────────────────────────
+    {
+      category: "Liquor & Spirits",
+      name: "Johnnie Walker Red Label (Bottle)",
+      nameAm: "ሬድ ሌብል",
+      price: 9000,
+      description: "Johnnie Walker Red Label Blended Scotch Whisky (Full 750ml Bottle).",
+      descriptionAm: "ጆኒ ወከር ሬድ ሌብል ሙሉ ጠርሙስ።",
+      imageUrl: "https://images.unsplash.com/photo-1527281400683-1aae777175f8?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Liquor & Spirits",
+      name: "Johnnie Walker Red Label (Half Bottle)",
+      nameAm: "ሬድ ሌብል ግማሽ",
+      price: 4500,
+      description: "Johnnie Walker Red Label Whisky (Half 375ml Bottle).",
+      descriptionAm: "ጆኒ ወከር ሬድ ሌብል ግማሽ ጠርሙስ።",
+      imageUrl: "https://images.unsplash.com/photo-1527281400683-1aae777175f8?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Liquor & Spirits",
+      name: "Johnnie Walker Black Label 12 Yrs (Bottle)",
+      nameAm: "ብላክ ሌብል",
+      price: 14000,
+      description: "Johnnie Walker Black Label 12-Year-Old Blended Scotch Whisky (Full Bottle).",
+      descriptionAm: "ጆኒ ወከር ብላክ ሌብል ሙሉ ጠርሙስ።",
+      imageUrl: "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Liquor & Spirits",
+      name: "Johnnie Walker Gold Label Reserve (Bottle)",
+      nameAm: "ጎልድ ሌብል",
+      price: 20000,
+      description: "Johnnie Walker Gold Label Reserve Blended Scotch Whisky (Full Bottle).",
+      descriptionAm: "ጆኒ ወከር ጎልድ ሌብል ሪዘርቭ ሙሉ ጠርሙስ።",
+      imageUrl: "https://images.unsplash.com/photo-1527281400683-1aae777175f8?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Liquor & Spirits",
+      name: "Grant's Blended Scotch Whisky (Bottle)",
+      nameAm: "ግራንትስ",
+      price: 9000,
+      description: "Grant's Triple Wood Blended Scotch Whisky (Full Bottle).",
+      descriptionAm: "ግራንትስ ውስኪ ሙሉ ጠርሙስ።",
+      imageUrl: "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Liquor & Spirits",
+      name: "Stoli Premium Vodka (Bottle)",
+      nameAm: "ስቶሊ ቮድካ",
+      price: 9000,
+      description: "Stolichnaya Premium Russian Imported Vodka (Full Bottle).",
+      descriptionAm: "ስቶሊ ፕሪሚየም ቮድካ ሙሉ ጠርሙስ።",
+      imageUrl: "https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Liquor & Spirits",
+      name: "Winter Palace Vodka (Bottle)",
+      nameAm: "ዊንተር ፖላስ",
+      price: 9000,
+      description: "Winter Palace Triple Distilled Vodka (Full Bottle).",
+      descriptionAm: "ዊንተር ፖላስ ቮድካ ሙሉ ጠርሙስ።",
+      imageUrl: "https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Liquor & Spirits",
+      name: "Gordon's London Dry Gin (Full Bottle)",
+      nameAm: "ጎርደን ጂን",
+      price: 9000,
+      description: "Gordon's London Dry Gin distilled with handpicked wild juniper berries (Full Bottle).",
+      descriptionAm: "ጎርደን ጂን ሙሉ ጠርሙስ።",
+      imageUrl: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Liquor & Spirits",
+      name: "Gordon's London Dry Gin (Half Bottle)",
+      nameAm: "ጎርደን ጂን ግማሽ",
+      price: 4500,
+      description: "Gordon's London Dry Gin (Half Bottle 375ml).",
+      descriptionAm: "ጎርደን ጂን ግማሽ ጠርሙስ።",
+      imageUrl: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Liquor & Spirits",
+      name: "Maraton Gin (Full Bottle)",
+      nameAm: "በጠርሙስ ማራቶን ጂን",
+      price: 3500,
+      description: "Maraton Dry Gin Full Bottle 750ml.",
+      descriptionAm: "ማራቶን ጂን ሙሉ ጠርሙስ።",
+      imageUrl: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=700&auto=format&fit=crop&q=80",
+    },
+    {
+      category: "Liquor & Spirits",
+      name: "Mini Maraton Gin",
+      nameAm: "ሚኒ ማራቶን ጂን",
+      price: 600,
+      description: "Maraton Dry Gin pocket-sized bottle.",
+      descriptionAm: "ሚኒ ማራቶን ጂን የኪስ ጠርሙስ።",
+      imageUrl: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=700&auto=format&fit=crop&q=80",
+    },
+  ];
+
+  let addedCount = 0;
+  let updatedCount = 0;
+
+  for (const p of products) {
+    const categoryId = catMap[p.category];
+
+    // Check if item already exists by name in this restaurant
+    const existing = await prisma.product.findFirst({
+      where: {
+        restaurantId,
+        OR: [
+          { name: p.name },
+          { nameAm: p.nameAm },
+        ],
+      },
+    });
+
+    if (existing) {
+      await prisma.product.update({
+        where: { id: existing.id },
+        data: {
+          name: p.name,
+          nameAm: p.nameAm,
+          price: p.price,
+          categoryId,
+          description: p.description,
+          descriptionAm: p.descriptionAm,
+          imageUrl: p.imageUrl,
+          isAvailable: true,
+          isActive: true,
+        },
+      });
+      updatedCount++;
+    } else {
+      await prisma.product.create({
+        data: {
+          restaurantId,
+          categoryId,
+          name: p.name,
+          nameAm: p.nameAm,
+          price: p.price,
+          description: p.description,
+          descriptionAm: p.descriptionAm,
+          imageUrl: p.imageUrl,
+          isAvailable: true,
+          isActive: true,
+        },
+      });
+      addedCount++;
+    }
+  }
+
+  console.log(`✅ Menu import complete!`);
+  console.log(`📊 Categories configured: ${Object.keys(catMap).length}`);
+  console.log(`✨ Products added: ${addedCount}`);
+  console.log(`🔄 Products updated: ${updatedCount}`);
+  console.log(`Total menu items: ${addedCount + updatedCount}`);
+}
+
+main()
+  .catch((e) => {
+    console.error("❌ Error importing menu:", e);
+    process.exit(1);
+  })
+  .finally(() => prisma.$disconnect());
+

@@ -1,4 +1,3 @@
-
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { parseLang } from "@/lib/i18n";
@@ -7,8 +6,11 @@ import InteractiveMenu from "@/components/InteractiveMenu";
 export const dynamic = "force-dynamic";
 
 interface PublicMenuPageProps {
-  params: Promise<{ slug: string }>;
-  searchParams: Promise<{
+  params: { slug: string } | Promise<{ slug: string }>;
+  searchParams?: {
+    lang?: string;
+    table?: string;
+  } | Promise<{
     lang?: string;
     table?: string;
   }>;
@@ -18,12 +20,14 @@ export default async function PublicMenuPage({
   params,
   searchParams,
 }: PublicMenuPageProps) {
-  const [{ slug }, query] = await Promise.all([
-    params,
-    searchParams,
-  ]);
+  const resolvedParams = await Promise.resolve(params);
+  const resolvedQuery = (await Promise.resolve(searchParams)) || {};
+  const slug = resolvedParams?.slug;
+  const lang = parseLang(resolvedQuery?.lang);
 
-  const lang = parseLang(query.lang);
+  if (!slug) {
+    notFound();
+  }
 
   const restaurant = await prisma.restaurant.findFirst({
     where: {
@@ -50,7 +54,7 @@ export default async function PublicMenuPage({
     notFound();
   }
 
-  // Record anonymous menu views without blocking the page.
+  // Record anonymous menu views without blocking the page
   void prisma.menuView
     .create({
       data: {
@@ -62,14 +66,24 @@ export default async function PublicMenuPage({
       console.error("Menu analytics error:", error);
     });
 
+  // Serialize Decimal objects to plain numbers for client component compatibility
+  const serializedProducts = restaurant.products.map((p) => ({
+    ...p,
+    price: Number(p.price),
+  }));
+
   return (
     <main className="min-h-screen bg-[#faf9f6]">
       <InteractiveMenu
-        restaurant={restaurant}
+        restaurant={{
+          ...restaurant,
+          name: restaurant.name,
+          nameAm: restaurant.nameAm,
+        }}
         categories={restaurant.categories}
-        products={restaurant.products}
+        products={serializedProducts}
         tables={restaurant.tables}
-        initialTableToken={query.table}
+        initialTableToken={resolvedQuery?.table}
         lang={lang}
       />
     </main>

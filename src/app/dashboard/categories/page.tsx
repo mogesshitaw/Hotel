@@ -15,23 +15,23 @@ export default async function Categories() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-xl sm:text-2xl font-extrabold text-stone-900 tracking-tight">
+        <h1 className="text-xl sm:text-2xl font-extrabold text-stone-900 dark:text-white tracking-tight">
           Menu Categories
         </h1>
-        <p className="text-xs sm:text-sm text-stone-500 mt-1">
+        <p className="text-xs sm:text-sm text-stone-500 dark:text-slate-400 mt-1">
           Organize your food and beverage catalog into searchable sections.
         </p>
       </div>
 
       {/* Add Category Form Card */}
       <div className={cardCls}>
-        <h2 className="text-sm font-bold text-stone-900 mb-3 flex items-center gap-2">
+        <h2 className="text-sm font-bold text-stone-900 dark:text-white mb-3 flex items-center gap-2">
           <span>➕</span>
           <span>Add New Category</span>
         </h2>
         <form action={createCategory} className="grid gap-3 sm:grid-cols-3">
           <div>
-            <label className="block text-xs font-semibold text-stone-600 mb-1">
+            <label className="block text-xs font-semibold text-stone-600 dark:text-slate-300 mb-1">
               English Name *
             </label>
             <input

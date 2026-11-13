@@ -93,6 +93,8 @@ const words = {
     remove: "Remove",
     itemsCount: "menu items",
     noImage: "Fresh & delicious",
+    viewDetail: "Detail",
+    detailsTitle: "Dish Details",
   },
   am: {
     greeting: "ጥሩ ምግብ ጥሩ ቀን ይፈጥራል።",
@@ -139,6 +141,8 @@ const words = {
     remove: "አስወግድ",
     itemsCount: "የምግብ አይነቶች",
     noImage: "ትኩስ እና ጣፋጭ",
+    viewDetail: "ዝርዝር",
+    detailsTitle: "የምግብ ዝርዝር",
   },
 };
 
@@ -183,6 +187,7 @@ export default function InteractiveMenu({
   const [placedOrderId, setPlacedOrderId] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [orderError, setOrderError] = useState("");
+  const [selectedProductDetail, setSelectedProductDetail] = useState<Product | null>(null);
   const [isPending, startTransition] = useTransition();
 
   const t = words[lang];
@@ -575,9 +580,11 @@ export default function InteractiveMenu({
                   >
                     {/* Dish Image */}
                     <div
-                      className={`relative h-28 w-28 shrink-0 overflow-hidden rounded-xl sm:h-32 sm:w-32 ${
+                      onClick={() => setSelectedProductDetail(product)}
+                      className={`relative h-28 w-28 shrink-0 overflow-hidden rounded-xl sm:h-32 sm:w-32 cursor-pointer ${
                         isDark ? "bg-[#1c253b]" : "bg-stone-100"
                       }`}
+                      title={t.viewDetail}
                     >
                       {product.imageUrl ? (
                         <img
@@ -611,7 +618,8 @@ export default function InteractiveMenu({
                     <div className="flex min-w-0 flex-1 flex-col py-0.5">
                       <div className="min-w-0">
                         <h4
-                          className={`line-clamp-1 text-sm font-black ${
+                          onClick={() => setSelectedProductDetail(product)}
+                          className={`line-clamp-1 text-sm font-black cursor-pointer hover:underline ${
                             isDark ? "text-white" : "text-stone-900"
                           }`}
                         >
@@ -634,13 +642,29 @@ export default function InteractiveMenu({
                       </div>
 
                       <div className="mt-auto flex items-end justify-between gap-2 pt-2.5">
-                        <span
-                          className={`text-sm font-black ${
-                            isDark ? "text-white" : "text-stone-900"
-                          }`}
-                        >
-                          {money(product.price, restaurant.currency)}
-                        </span>
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <span
+                            className={`text-sm font-black ${
+                              isDark ? "text-white" : "text-stone-900"
+                            }`}
+                          >
+                            {money(product.price, restaurant.currency)}
+                          </span>
+                          {/* 👁️ View Detail button */}
+                          <button
+                            type="button"
+                            onClick={() => setSelectedProductDetail(product)}
+                            className={`inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-[10px] font-bold border transition cursor-pointer ${
+                              isDark
+                                ? "border-[#25324d] bg-[#1c253b] text-slate-300 hover:border-amber-400 hover:text-amber-400"
+                                : "border-slate-200 bg-slate-50 text-stone-600 hover:border-amber-500 hover:text-amber-700"
+                            }`}
+                            title={t.viewDetail}
+                          >
+                            <span>👁️</span>
+                            <span>{t.viewDetail}</span>
+                          </button>
+                        </div>
                         {item ? (
                           <div
                             className={`flex items-center gap-2 rounded-full p-1 ${
@@ -1107,6 +1131,161 @@ export default function InteractiveMenu({
               </footer>
             )}
           </section>
+        </div>
+      )}
+
+      {/* ─── Customer Dish Detail Modal ───────────────────────────────────── */}
+      {selectedProductDetail && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-xs animate-in fade-in"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setSelectedProductDetail(null);
+          }}
+        >
+          <div
+            className={`relative w-full max-w-lg rounded-3xl border overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 ${
+              isDark
+                ? "bg-[#151c2c] border-[#222d42] text-slate-100"
+                : "bg-white border-slate-200 text-stone-900"
+            }`}
+          >
+            {/* Dish Photo Banner */}
+            <div className="relative h-60 sm:h-72 w-full bg-slate-900">
+              {selectedProductDetail.imageUrl ? (
+                <img
+                  src={selectedProductDetail.imageUrl}
+                  alt={pick(lang, selectedProductDetail.name, selectedProductDetail.nameAm)}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center text-6xl">
+                  🍲
+                </div>
+              )}
+
+              {/* Close Button */}
+              <button
+                type="button"
+                onClick={() => setSelectedProductDetail(null)}
+                className="absolute top-4 right-4 flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-white font-black backdrop-blur-md border border-white/20 hover:bg-black transition-all cursor-pointer"
+                aria-label={t.close}
+              >
+                ✕
+              </button>
+
+              {/* Price Banner */}
+              <div className="absolute bottom-3 left-4 rounded-xl bg-black/70 backdrop-blur-md px-3.5 py-1.5 border border-white/10 shadow-lg">
+                <span className="text-xl font-black text-amber-400">
+                  {money(selectedProductDetail.price, restaurant.currency)}
+                </span>
+              </div>
+
+              {/* Category Pill */}
+              <span className="absolute top-4 left-4 rounded-full bg-black/60 backdrop-blur-md px-3 py-1 text-xs font-bold text-white border border-white/10">
+                {categoryEmojis[
+                  categories.find((c) => c.id === selectedProductDetail.categoryId)?.name || ""
+                ] || "✦"}{" "}
+                {categories.find((c) => c.id === selectedProductDetail.categoryId)?.name || ""}
+              </span>
+            </div>
+
+            {/* Modal Content */}
+            <div className="p-5 sm:p-6 space-y-4">
+              <div>
+                <h3 className={`text-xl sm:text-2xl font-black leading-snug ${isDark ? "text-white" : "text-stone-900"}`}>
+                  {pick(lang, selectedProductDetail.name, selectedProductDetail.nameAm)}
+                </h3>
+                {selectedProductDetail.nameAm && (
+                  <p className="text-sm sm:text-base font-bold text-amber-500 mt-0.5">
+                    {selectedProductDetail.nameAm}
+                  </p>
+                )}
+              </div>
+
+              {/* Detailed Descriptions */}
+              <div
+                className={`p-4 rounded-2xl border space-y-2 leading-relaxed ${
+                  isDark
+                    ? "bg-[#1c253b] border-[#25324d] text-slate-300"
+                    : "bg-slate-50 border-slate-200 text-stone-700"
+                }`}
+              >
+                {selectedProductDetail.description && (
+                  <p className="text-xs sm:text-sm">
+                    {selectedProductDetail.description}
+                  </p>
+                )}
+                {selectedProductDetail.descriptionAm && (
+                  <p
+                    className={`text-xs sm:text-sm pt-1.5 text-amber-400 font-medium ${
+                      selectedProductDetail.description ? "border-t border-slate-700/20" : ""
+                    }`}
+                  >
+                    {selectedProductDetail.descriptionAm}
+                  </p>
+                )}
+                {!selectedProductDetail.description && !selectedProductDetail.descriptionAm && (
+                  <p className="text-xs text-slate-400 italic">
+                    {lang === "am"
+                      ? "በፍቅር እና በጥንቃቄ የተዘጋጀ ልዩ ምግብ።"
+                      : "Freshly prepared favourite made with care and quality ingredients."}
+                  </p>
+                )}
+              </div>
+
+              {/* Bottom Action Controls: Cart counter / Add button / Close */}
+              <div className="flex items-center gap-2.5 pt-2">
+                {cart[selectedProductDetail.id] ? (
+                  <div
+                    className={`flex items-center gap-3 rounded-2xl p-1.5 border flex-1 justify-between ${
+                      isDark
+                        ? "bg-[#1c253b] border-[#25324d]"
+                        : "bg-slate-100 border-slate-200"
+                    }`}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => updateQuantity(selectedProductDetail.id, -1)}
+                      className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-500/20 text-amber-400 font-black text-lg hover:bg-amber-500/30 transition cursor-pointer"
+                    >
+                      −
+                    </button>
+                    <span className="font-black text-sm">
+                      {cart[selectedProductDetail.id].quantity} {t.items}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => addToCart(selectedProductDetail)}
+                      className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-500 text-stone-950 font-black text-lg hover:bg-amber-400 transition cursor-pointer"
+                    >
+                      +
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => addToCart(selectedProductDetail)}
+                    className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-black py-3 text-xs sm:text-sm shadow-md shadow-amber-500/20 transition-all cursor-pointer active:scale-95"
+                  >
+                    <span>+</span>
+                    <span>{t.add}</span>
+                  </button>
+                )}
+
+                <button
+                  type="button"
+                  onClick={() => setSelectedProductDetail(null)}
+                  className={`rounded-2xl border px-5 py-3 text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+                    isDark
+                      ? "bg-[#1c253b] border-[#25324d] text-slate-300 hover:bg-[#25324d]"
+                      : "bg-slate-100 border-slate-200 text-slate-700 hover:bg-slate-200"
+                  }`}
+                >
+                  {t.close}
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>
