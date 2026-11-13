@@ -8,10 +8,10 @@ export default async function Settings() {
   return (
     <div className="space-y-6 max-w-3xl">
       <div>
-        <h1 className="text-xl sm:text-2xl font-extrabold text-stone-900 tracking-tight">
-          Restaurant Settings & Branding
+        <h1 className="text-xl sm:text-2xl font-extrabold text-stone-900 dark:text-white tracking-tight">
+          Restaurant Settings &amp; Branding
         </h1>
-        <p className="text-xs sm:text-sm text-stone-500 mt-1">
+        <p className="text-xs sm:text-sm text-stone-500 dark:text-slate-400 mt-1">
           Customize your restaurant profile, contact details, and public menu appearance.
         </p>
       </div>
@@ -19,26 +19,26 @@ export default async function Settings() {
       <form action={updateSettings} className="space-y-6">
         {/* Brand & Identity */}
         <div className={cardCls}>
-          <h2 className="text-sm font-bold text-stone-900 mb-3 flex items-center gap-2">
+          <h2 className="text-sm font-bold text-stone-900 dark:text-white mb-3 flex items-center gap-2">
             <span>🏷️</span>
-            <span>Profile & Names</span>
+            <span>Profile &amp; Names</span>
           </h2>
           <div className="grid gap-3 sm:grid-cols-2">
             <div>
-              <label className="block text-xs font-semibold text-stone-600 mb-1">
+              <label className="block text-xs font-semibold text-stone-600 dark:text-slate-300 mb-1">
                 Restaurant Name (English) *
               </label>
               <input
                 name="name"
                 defaultValue={r.name}
                 required
-                placeholder="e.g. Fre Bar & Restaurant"
+                placeholder="e.g. Fre Bar &amp; Restaurant"
                 className={inputCls}
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-stone-600 mb-1">
+              <label className="block text-xs font-semibold text-stone-600 dark:text-slate-300 mb-1">
                 የሬስቶራንት ስም (አማርኛ)
               </label>
               <input
@@ -50,7 +50,7 @@ export default async function Settings() {
             </div>
 
             <div className="sm:col-span-2">
-              <label className="block text-xs font-semibold text-stone-600 mb-1">
+              <label className="block text-xs font-semibold text-stone-600 dark:text-slate-300 mb-1">
                 Tagline or Description
               </label>
               <input
@@ -62,7 +62,7 @@ export default async function Settings() {
             </div>
 
             <div className="sm:col-span-2">
-              <label className="block text-xs font-semibold text-stone-600 mb-1">
+              <label className="block text-xs font-semibold text-stone-600 dark:text-slate-300 mb-1">
                 Contact Phone
               </label>
               <input
@@ -77,13 +77,13 @@ export default async function Settings() {
 
         {/* Media & Artwork */}
         <div className={cardCls}>
-          <h2 className="text-sm font-bold text-stone-900 mb-3 flex items-center gap-2">
+          <h2 className="text-sm font-bold text-stone-900 dark:text-white mb-3 flex items-center gap-2">
             <span>🎨</span>
-            <span>Logo & Cover Banner</span>
+            <span>Logo &amp; Cover Banner</span>
           </h2>
           <div className="grid gap-3">
             <div>
-              <label className="block text-xs font-semibold text-stone-600 mb-1">
+              <label className="block text-xs font-semibold text-stone-600 dark:text-slate-300 mb-1">
                 Logo URL (square ratio recommended)
               </label>
               <input
@@ -95,7 +95,7 @@ export default async function Settings() {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-stone-600 mb-1">
+              <label className="block text-xs font-semibold text-stone-600 dark:text-slate-300 mb-1">
                 Cover Image URL (landscape banner)
               </label>
               <input
@@ -110,23 +110,23 @@ export default async function Settings() {
 
         {/* System & URL Info */}
         <div className={cardCls}>
-          <h2 className="text-sm font-bold text-stone-900 mb-2 flex items-center gap-2">
+          <h2 className="text-sm font-bold text-stone-900 dark:text-white mb-2 flex items-center gap-2">
             <span>🔗</span>
             <span>Public Storefront Link</span>
           </h2>
-          <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-stone-50 p-3 border border-stone-200/80">
+          <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-stone-50 dark:bg-[#1c253b] p-3 border border-stone-200/80 dark:border-[#25324d]">
             <div>
-              <span className="font-mono text-xs font-semibold text-amber-700">
+              <span className="font-mono text-xs font-semibold text-amber-700 dark:text-amber-400">
                 /menu/{r.slug}
               </span>
-              <p className="text-[11px] text-stone-400 mt-0.5">
-                Currency: <strong>{r.currency}</strong> · Timezone: <strong>{r.timezone}</strong>
+              <p className="text-[11px] text-stone-400 dark:text-slate-500 mt-0.5">
+                Currency: <strong className="text-stone-600 dark:text-slate-300">{r.currency}</strong> · Timezone: <strong className="text-stone-600 dark:text-slate-300">{r.timezone}</strong>
               </p>
             </div>
             <a
               href={`/menu/${r.slug}`}
               target="_blank"
-              className="rounded-lg bg-white px-3 py-1.5 text-xs font-semibold text-stone-700 border border-stone-200 hover:bg-stone-50 transition"
+              className="rounded-lg bg-white dark:bg-[#151c2c] px-3 py-1.5 text-xs font-semibold text-stone-700 dark:text-slate-300 border border-stone-200 dark:border-[#25324d] hover:bg-stone-50 dark:hover:bg-[#1c253b] transition"
             >
               Open Menu ↗
             </a>

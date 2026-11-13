@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { getRestaurantContext } from "@/lib/auth/require-restaurant-access";
-import { createExpense } from "../actions";
+import { createExpense } from "../erp/actions";
 import { ExpenseCategory } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
@@ -10,8 +10,8 @@ const categoryIcons: Record<ExpenseCategory, string> = {
   UTILITIES: "⚡",
   PAYROLL: "👥",
   SUPPLIES: "🛍️",
+  REPAIRS: "🔧",
   MARKETING: "📣",
-  MAINTENANCE: "🔧",
   OTHER: "📦",
 };
 
@@ -20,8 +20,8 @@ const categoryColors: Record<ExpenseCategory, string> = {
   UTILITIES: "bg-blue-500/10 text-blue-400 border-blue-500/20",
   PAYROLL: "bg-amber-500/10 text-amber-400 border-amber-500/20",
   SUPPLIES: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
+  REPAIRS: "bg-cyan-500/10 text-cyan-400 border-cyan-500/20",
   MARKETING: "bg-pink-500/10 text-pink-400 border-pink-500/20",
-  MAINTENANCE: "bg-cyan-500/10 text-cyan-400 border-cyan-500/20",
   OTHER: "bg-slate-500/10 text-slate-400 border-slate-500/20",
 };
 

@@ -41,6 +41,86 @@ export async function togglePlan(f: FormData) {
 
 // ─── Tenants ─────────────────────────────────────────────────────────────────
 
+export async function createTenant(f: FormData) {
+  const name = str(f, "name");
+  const nameAm = str(f, "nameAm");
+  let slug = str(f, "slug")?.toLowerCase().replace(/[^a-z0-9-]/g, "-").replace(/-+/g, "-");
+  const phone = str(f, "phone");
+  const currency = str(f, "currency") || "ETB";
+  const planId = str(f, "planId");
+
+  if (!name) return;
+  if (!slug) {
+    slug = name.toLowerCase().replace(/[^a-z0-9-]/g, "-").replace(/-+/g, "-");
+  }
+
+  // Ensure unique slug
+  let finalSlug = slug;
+  let counter = 1;
+  while (await prisma.restaurant.findUnique({ where: { slug: finalSlug } })) {
+    finalSlug = `${slug}-${counter++}`;
+  }
+
+  // 1. Create Restaurant with default Main branch
+  const restaurant = await prisma.restaurant.create({
+    data: {
+      name,
+      nameAm,
+      slug: finalSlug,
+      phone,
+      currency,
+      isActive: true,
+      planId: planId || undefined,
+      branches: {
+        create: {
+          name: "Main Branch",
+          nameAm: "ዋና ቅርንጫፍ",
+          phone: phone || undefined,
+          isHQ: true,
+        },
+      },
+    },
+  });
+
+  // 2. Link default admin user as OWNER
+  const defaultUserId = "00000000-0000-4000-8000-000000000001";
+  await prisma.membership.create({
+    data: {
+      userId: defaultUserId,
+      restaurantId: restaurant.id,
+      role: "OWNER",
+    },
+  });
+
+  // 3. Optional initial subscription if plan chosen
+  if (planId) {
+    const now = new Date();
+    await prisma.subscription.create({
+      data: {
+        restaurantId: restaurant.id,
+        planId,
+        status: "ACTIVE",
+        currentPeriodStart: now,
+        currentPeriodEnd: new Date(now.getTime() + 30 * 86400000),
+      },
+    });
+  }
+
+  // Audit log
+  await prisma.auditLog.create({
+    data: {
+      restaurantId: restaurant.id,
+      action: "CREATE",
+      entity: "Restaurant",
+      entityId: restaurant.id,
+      description: `New tenant registered: "${restaurant.name}" (/menu/${restaurant.slug})`,
+    },
+  });
+
+  revalidatePath("/admin/tenants");
+  revalidatePath("/admin");
+}
+
 export async function toggleTenant(f: FormData) {
   const id = str(f, "id")!;
   const r = await prisma.restaurant.findUnique({ where: { id } });

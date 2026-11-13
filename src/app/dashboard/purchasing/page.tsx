@@ -9,11 +9,16 @@ function fmt(n: number) {
 }
 
 const statusColors: Record<string, string> = {
-  DRAFT: "bg-stone-100 text-stone-700 border-stone-200",
-  ORDERED: "bg-blue-50 text-blue-700 border-blue-200",
-  RECEIVED: "bg-emerald-50 text-emerald-700 border-emerald-200",
-  CANCELLED: "bg-red-50 text-red-600 border-red-200",
+  DRAFT: "bg-stone-100 dark:bg-[#1c253b] text-stone-700 dark:text-slate-300 border-stone-200 dark:border-[#25324d]",
+  ORDERED: "bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-700/40",
+  RECEIVED: "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-700/40",
+  CANCELLED: "bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 border-red-200 dark:border-red-700/40",
 };
+
+const inputRow =
+  "w-full rounded-xl border border-stone-200 dark:border-[#25324d] bg-white dark:bg-[#101624] px-3 py-2.5 text-sm text-stone-900 dark:text-white placeholder:text-stone-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-400";
+const inputXs =
+  "w-full rounded-lg border border-stone-200 dark:border-[#25324d] bg-white dark:bg-[#101624] px-2 py-1.5 text-xs text-stone-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-400";
 
 export default async function PurchasingPage() {
   const { restaurant } = await getRestaurantContext();
@@ -39,8 +44,8 @@ export default async function PurchasingPage() {
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-stone-900">Purchasing</h1>
-          <p className="text-sm text-stone-500 mt-0.5">
+          <h1 className="text-2xl font-bold text-stone-900 dark:text-white">Purchasing</h1>
+          <p className="text-sm text-stone-500 dark:text-slate-400 mt-0.5">
             {purchaseOrders.length} orders · Open value: ETB {fmt(openValue)}
           </p>
         </div>
@@ -54,12 +59,12 @@ export default async function PurchasingPage() {
           { label: "Received", value: receivedCount, icon: "✅" },
           { label: "Suppliers", value: suppliers.length, icon: "🏭" },
         ].map((k) => (
-          <div key={k.label} className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm">
+          <div key={k.label} className="rounded-2xl border border-stone-200 dark:border-[#222d42] bg-white dark:bg-[#151c2c] p-4 shadow-sm">
             <div className="flex items-center gap-2 mb-1">
               <span className="text-xl">{k.icon}</span>
-              <p className="text-xs text-stone-500">{k.label}</p>
+              <p className="text-xs text-stone-500 dark:text-slate-400">{k.label}</p>
             </div>
-            <p className="text-xl font-bold text-stone-900 truncate">{k.value}</p>
+            <p className="text-xl font-bold text-stone-900 dark:text-white truncate">{k.value}</p>
           </div>
         ))}
       </div>
@@ -68,34 +73,34 @@ export default async function PurchasingPage() {
         {/* Sidebar: Suppliers + New PO */}
         <div className="space-y-5">
           {/* Add Supplier */}
-          <div className="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm">
-            <h2 className="font-semibold text-stone-800 mb-4">Add Supplier</h2>
+          <div className="rounded-2xl border border-stone-200 dark:border-[#222d42] bg-white dark:bg-[#151c2c] p-5 shadow-sm">
+            <h2 className="font-semibold text-stone-800 dark:text-white mb-4">Add Supplier</h2>
             <form action={createSupplier} className="space-y-3">
-              <input type="text" name="name" required placeholder="Supplier name *" className="w-full rounded-xl border border-stone-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400" />
-              <input type="text" name="phone" placeholder="Phone" className="w-full rounded-xl border border-stone-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400" />
-              <input type="email" name="email" placeholder="Email" className="w-full rounded-xl border border-stone-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400" />
-              <input type="text" name="address" placeholder="Address" className="w-full rounded-xl border border-stone-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400" />
-              <button type="submit" className="w-full rounded-xl bg-gradient-to-tr from-amber-600 to-orange-500 py-2.5 text-sm font-semibold text-white hover:opacity-90 transition-opacity">
+              <input type="text" name="name" required placeholder="Supplier name *" className={inputRow} />
+              <input type="text" name="phone" placeholder="Phone" className={inputRow} />
+              <input type="email" name="email" placeholder="Email" className={inputRow} />
+              <input type="text" name="address" placeholder="Address" className={inputRow} />
+              <button type="submit" className="w-full rounded-xl bg-amber-500 hover:bg-amber-400 py-2.5 text-sm font-black text-stone-950 transition-colors">
                 Add Supplier
               </button>
             </form>
           </div>
 
           {/* Supplier List */}
-          <div className="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm">
-            <h2 className="font-semibold text-stone-800 mb-3">Suppliers ({suppliers.length})</h2>
+          <div className="rounded-2xl border border-stone-200 dark:border-[#222d42] bg-white dark:bg-[#151c2c] p-5 shadow-sm">
+            <h2 className="font-semibold text-stone-800 dark:text-white mb-3">Suppliers ({suppliers.length})</h2>
             {suppliers.length === 0 ? (
-              <p className="text-xs text-stone-400 py-4 text-center">No suppliers yet</p>
+              <p className="text-xs text-stone-400 dark:text-slate-500 py-4 text-center">No suppliers yet</p>
             ) : (
               <div className="space-y-2">
                 {suppliers.map((s) => (
-                  <div key={s.id} className="flex items-center gap-3 rounded-xl border border-stone-100 p-3">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-50 text-sm font-bold text-amber-700">
+                  <div key={s.id} className="flex items-center gap-3 rounded-xl border border-stone-100 dark:border-[#25324d] p-3">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-50 dark:bg-amber-950/40 text-sm font-bold text-amber-700 dark:text-amber-400">
                       {s.name.charAt(0)}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-stone-900 truncate">{s.name}</p>
-                      {s.phone && <p className="text-xs text-stone-400">{s.phone}</p>}
+                      <p className="text-sm font-semibold text-stone-900 dark:text-white truncate">{s.name}</p>
+                      {s.phone && <p className="text-xs text-stone-400 dark:text-slate-500">{s.phone}</p>}
                     </div>
                   </div>
                 ))}
@@ -105,39 +110,39 @@ export default async function PurchasingPage() {
 
           {/* New PO Form */}
           {suppliers.length > 0 && ingredients.length > 0 && (
-            <div className="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm">
-              <h2 className="font-semibold text-stone-800 mb-4">Create Purchase Order</h2>
+            <div className="rounded-2xl border border-stone-200 dark:border-[#222d42] bg-white dark:bg-[#151c2c] p-5 shadow-sm">
+              <h2 className="font-semibold text-stone-800 dark:text-white mb-4">Create Purchase Order</h2>
               <form action={createPurchaseOrder} className="space-y-3">
                 <div>
-                  <label className="block text-xs font-semibold text-stone-600 mb-1">Supplier</label>
-                  <select name="supplierId" required className="w-full rounded-xl border border-stone-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400">
+                  <label className="block text-xs font-semibold text-stone-600 dark:text-slate-300 mb-1">Supplier</label>
+                  <select name="supplierId" required className={inputRow}>
                     {suppliers.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-stone-600 mb-1">Expected Delivery</label>
-                  <input type="date" name="deliveryDate" className="w-full rounded-xl border border-stone-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400" />
+                  <label className="block text-xs font-semibold text-stone-600 dark:text-slate-300 mb-1">Expected Delivery</label>
+                  <input type="date" name="deliveryDate" className={inputRow} />
                 </div>
-                <div className="border-t border-stone-100 pt-3">
-                  <p className="text-xs font-semibold text-stone-600 mb-2">Line Items</p>
+                <div className="border-t border-stone-100 dark:border-[#1e2638] pt-3">
+                  <p className="text-xs font-semibold text-stone-600 dark:text-slate-300 mb-2">Line Items</p>
                   <div className="space-y-3">
                     {[0, 1, 2].map((i) => (
-                      <div key={i} className="rounded-xl bg-stone-50 p-3 space-y-2">
-                        <p className="text-xs text-stone-500 font-medium">Item {i + 1}</p>
-                        <select name={`ingredientId_${i}`} className="w-full rounded-lg border border-stone-200 px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-amber-400">
+                      <div key={i} className="rounded-xl bg-stone-50 dark:bg-[#1c253b] border dark:border-[#25324d] p-3 space-y-2">
+                        <p className="text-xs text-stone-500 dark:text-slate-400 font-medium">Item {i + 1}</p>
+                        <select name={`ingredientId_${i}`} className={inputXs}>
                           <option value="">— Select ingredient —</option>
                           {ingredients.map((ing) => <option key={ing.id} value={ing.id}>{ing.name} ({ing.unit})</option>)}
                         </select>
                         <div className="grid grid-cols-2 gap-2">
-                          <input type="number" name={`quantity_${i}`} step="0.01" min="0" placeholder="Qty" className="w-full rounded-lg border border-stone-200 px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-amber-400" />
-                          <input type="number" name={`unitCost_${i}`} step="0.01" min="0" placeholder="Cost (ETB)" className="w-full rounded-lg border border-stone-200 px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-amber-400" />
+                          <input type="number" name={`quantity_${i}`} step="0.01" min="0" placeholder="Qty" className={inputXs} />
+                          <input type="number" name={`unitCost_${i}`} step="0.01" min="0" placeholder="Cost (ETB)" className={inputXs} />
                         </div>
                       </div>
                     ))}
                   </div>
                 </div>
-                <input type="text" name="notes" placeholder="Notes (optional)" className="w-full rounded-xl border border-stone-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400" />
-                <button type="submit" className="w-full rounded-xl bg-gradient-to-tr from-teal-600 to-teal-500 py-2.5 text-sm font-semibold text-white hover:opacity-90 transition-opacity">
+                <input type="text" name="notes" placeholder="Notes (optional)" className={inputRow} />
+                <button type="submit" className="w-full rounded-xl bg-teal-600 hover:bg-teal-500 py-2.5 text-sm font-black text-white transition-colors">
                   Create PO
                 </button>
               </form>
@@ -147,47 +152,47 @@ export default async function PurchasingPage() {
 
         {/* Purchase Orders Table */}
         <div className="lg:col-span-2">
-          <div className="rounded-2xl border border-stone-200 bg-white shadow-sm overflow-hidden">
-            <div className="px-5 py-4 border-b border-stone-100">
-              <h2 className="font-semibold text-stone-800">Purchase Orders</h2>
+          <div className="rounded-2xl border border-stone-200 dark:border-[#222d42] bg-white dark:bg-[#151c2c] shadow-sm overflow-hidden">
+            <div className="px-5 py-4 border-b border-stone-100 dark:border-[#1e2638]">
+              <h2 className="font-semibold text-stone-800 dark:text-white">Purchase Orders</h2>
             </div>
             {purchaseOrders.length === 0 ? (
               <div className="py-20 text-center">
                 <span className="text-5xl">🛒</span>
-                <p className="mt-3 font-medium text-stone-500">No purchase orders yet</p>
+                <p className="mt-3 font-medium text-stone-500 dark:text-slate-400">No purchase orders yet</p>
               </div>
             ) : (
-              <div className="divide-y divide-stone-100">
+              <div className="divide-y divide-stone-100 dark:divide-[#1e2638]">
                 {purchaseOrders.map((po) => (
-                  <div key={po.id} className="p-5 hover:bg-stone-50/70 transition-colors">
+                  <div key={po.id} className="p-5 hover:bg-stone-50/70 dark:hover:bg-[#1c253b]/50 transition-colors">
                     <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
                       <div>
                         <div className="flex items-center gap-2 flex-wrap">
-                          <h3 className="font-semibold text-stone-900">{po.supplier.name}</h3>
+                          <h3 className="font-semibold text-stone-900 dark:text-white">{po.supplier.name}</h3>
                           <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold ${statusColors[po.status]}`}>
                             {po.status}
                           </span>
                         </div>
-                        <p className="text-xs text-stone-400 mt-0.5">
+                        <p className="text-xs text-stone-400 dark:text-slate-500 mt-0.5">
                           Ordered: {new Date(po.orderDate).toLocaleDateString("en-ET")}
                           {po.deliveryDate && ` · Delivery: ${new Date(po.deliveryDate).toLocaleDateString("en-ET")}`}
                           {po.notes && ` · ${po.notes}`}
                         </p>
                       </div>
                       <div className="text-right">
-                        <p className="text-lg font-bold text-stone-900">ETB {fmt(Number(po.total))}</p>
-                        <p className="text-xs text-stone-400">{po.items.length} items</p>
+                        <p className="text-lg font-bold text-stone-900 dark:text-white">ETB {fmt(Number(po.total))}</p>
+                        <p className="text-xs text-stone-400 dark:text-slate-500">{po.items.length} items</p>
                       </div>
                     </div>
 
                     {/* Items */}
-                    <div className="rounded-xl bg-stone-50 border border-stone-100 p-3 mb-3">
+                    <div className="rounded-xl bg-stone-50 dark:bg-[#1c253b] border border-stone-100 dark:border-[#25324d] p-3 mb-3">
                       <div className="space-y-1">
                         {po.items.map((item) => (
                           <div key={item.id} className="flex items-center justify-between text-xs">
-                            <span className="text-stone-700">{item.ingredient.name}</span>
-                            <span className="text-stone-500">{Number(item.quantity)} {item.ingredient.unit} × ETB {fmt(Number(item.unitCost))}</span>
-                            <span className="font-semibold text-stone-900">ETB {fmt(Number(item.totalCost))}</span>
+                            <span className="text-stone-700 dark:text-slate-300">{item.ingredient.name}</span>
+                            <span className="text-stone-500 dark:text-slate-400">{Number(item.quantity)} {item.ingredient.unit} × ETB {fmt(Number(item.unitCost))}</span>
+                            <span className="font-semibold text-stone-900 dark:text-white">ETB {fmt(Number(item.totalCost))}</span>
                           </div>
                         ))}
                       </div>
@@ -200,7 +205,7 @@ export default async function PurchasingPage() {
                           <form action={updatePurchaseOrderStatus}>
                             <input type="hidden" name="id" value={po.id} />
                             <input type="hidden" name="status" value="ORDERED" />
-                            <button type="submit" className="rounded-xl border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700 hover:bg-blue-100 transition-colors">
+                            <button type="submit" className="rounded-xl border border-blue-200 dark:border-blue-700/40 bg-blue-50 dark:bg-blue-950/40 px-3 py-1.5 text-xs font-semibold text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-950/60 transition-colors">
                               Mark as Ordered
                             </button>
                           </form>
@@ -209,7 +214,7 @@ export default async function PurchasingPage() {
                           <form action={updatePurchaseOrderStatus}>
                             <input type="hidden" name="id" value={po.id} />
                             <input type="hidden" name="status" value="RECEIVED" />
-                            <button type="submit" className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 hover:bg-emerald-100 transition-colors">
+                            <button type="submit" className="rounded-xl border border-emerald-200 dark:border-emerald-700/40 bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1.5 text-xs font-semibold text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-950/60 transition-colors">
                               ✓ Mark Received (Auto-update Stock)
                             </button>
                           </form>
@@ -217,7 +222,7 @@ export default async function PurchasingPage() {
                         <form action={updatePurchaseOrderStatus}>
                           <input type="hidden" name="id" value={po.id} />
                           <input type="hidden" name="status" value="CANCELLED" />
-                          <button type="submit" className="rounded-xl border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-100 transition-colors">
+                          <button type="submit" className="rounded-xl border border-red-200 dark:border-red-700/40 bg-red-50 dark:bg-red-950/40 px-3 py-1.5 text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-950/60 transition-colors">
                             Cancel
                           </button>
                         </form>
@@ -233,4 +238,3 @@ export default async function PurchasingPage() {
     </div>
   );
 }
-

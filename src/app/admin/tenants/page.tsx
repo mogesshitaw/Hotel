@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { toggleTenant, assignPlanToTenant, createBranch } from "../actions";
+import { toggleTenant, assignPlanToTenant, createBranch, createTenant } from "../actions";
 
 export const dynamic = "force-dynamic";
 
@@ -39,9 +39,102 @@ export default async function TenantsPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="stocky-heading">Tenants & Branches</h1>
+          <h1 className="stocky-heading">Tenants &amp; Branches</h1>
           <p className="stocky-subheading">{restaurants.length} restaurants hosted on the platform</p>
         </div>
+        <details className="relative">
+          <summary className="stocky-btn cursor-pointer list-none select-none">
+            ➕ Add Restaurant / Hotel
+          </summary>
+          <div className="absolute right-0 top-full mt-2 w-96 rounded-2xl border border-slate-200 dark:border-[#25324d] bg-white dark:bg-[#151c2c] p-5 shadow-2xl z-30 space-y-4">
+            <h3 className="font-bold text-base text-slate-900 dark:text-white">Register New Tenant</h3>
+            <form action={createTenant} className="space-y-3">
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Restaurant / Hotel Name (English) *
+                </label>
+                <input
+                  name="name"
+                  required
+                  placeholder="e.g. Grand Palace Hotel"
+                  className="w-full rounded-xl border border-slate-200 dark:border-[#25324d] bg-white dark:bg-[#101624] px-3 py-2 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  የሆቴል/ሬስቶራንት ስም (አማርኛ)
+                </label>
+                <input
+                  name="nameAm"
+                  placeholder="ለምሳሌ፡ ግራንድ ፓላስ ሆቴል"
+                  className="w-full rounded-xl border border-slate-200 dark:border-[#25324d] bg-white dark:bg-[#101624] px-3 py-2 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Menu URL Slug (optional)
+                </label>
+                <div className="flex items-center rounded-xl border border-slate-200 dark:border-[#25324d] bg-white dark:bg-[#101624] px-2.5 py-1 text-xs text-slate-500">
+                  <span>/menu/</span>
+                  <input
+                    name="slug"
+                    placeholder="grand-palace"
+                    className="w-full bg-transparent px-1 py-1 text-xs text-slate-900 dark:text-white focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Phone
+                  </label>
+                  <input
+                    name="phone"
+                    placeholder="+251 9..."
+                    className="w-full rounded-xl border border-slate-200 dark:border-[#25324d] bg-white dark:bg-[#101624] px-2.5 py-2 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Currency
+                  </label>
+                  <input
+                    name="currency"
+                    defaultValue="ETB"
+                    className="w-full rounded-xl border border-slate-200 dark:border-[#25324d] bg-white dark:bg-[#101624] px-2.5 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Subscription Plan (optional)
+                </label>
+                <select
+                  name="planId"
+                  className="w-full rounded-xl border border-slate-200 dark:border-[#25324d] bg-white dark:bg-[#101624] px-2.5 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500"
+                >
+                  <option value="">— No Plan / Free Trial —</option>
+                  {plans.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.name} ({p.tier}) · ETB {fmt(Number(p.priceMonthly))}/mo
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <button
+                type="submit"
+                className="w-full rounded-xl bg-amber-500 hover:bg-amber-400 py-2.5 text-xs font-black text-stone-950 transition-colors shadow-sm"
+              >
+                Create Restaurant &amp; Menu
+              </button>
+            </form>
+          </div>
+        </details>
       </div>
 
       {/* Tenant list */}

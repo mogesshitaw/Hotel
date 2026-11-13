@@ -83,8 +83,8 @@ export default async function ReportsPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-stone-900">Financial Reports</h1>
-        <p className="text-sm text-stone-500 mt-0.5">
+        <h1 className="text-2xl font-bold text-stone-900 dark:text-white">Financial Reports</h1>
+        <p className="text-sm text-stone-500 dark:text-slate-400 mt-0.5">
           {now.toLocaleDateString("en-ET", { month: "long", year: "numeric" })} · {restaurant.name}
         </p>
       </div>
@@ -92,14 +92,14 @@ export default async function ReportsPage() {
       {/* KPI Cards */}
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
         {[
-          { label: "Gross Revenue", value: grossRevenue, color: "text-emerald-600", bg: "bg-emerald-50 border-emerald-200", icon: "💰" },
-          { label: "COGS", value: totalCOGS, color: "text-red-600", bg: "bg-red-50 border-red-200", icon: "🏭" },
-          { label: "Expenses", value: totalExpenses, color: "text-orange-600", bg: "bg-orange-50 border-orange-200", icon: "💸" },
-          { label: "Net Profit", value: netProfit, color: netProfit >= 0 ? "text-teal-600" : "text-red-600", bg: netProfit >= 0 ? "bg-teal-50 border-teal-200" : "bg-red-50 border-red-200", icon: "📈" },
+          { label: "Gross Revenue", value: grossRevenue, color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-700/40", icon: "💰" },
+          { label: "COGS", value: totalCOGS, color: "text-red-600 dark:text-red-400", bg: "bg-red-50 dark:bg-red-950/40 border-red-200 dark:border-red-700/40", icon: "🏭" },
+          { label: "Expenses", value: totalExpenses, color: "text-orange-600 dark:text-orange-400", bg: "bg-orange-50 dark:bg-orange-950/40 border-orange-200 dark:border-orange-700/40", icon: "💸" },
+          { label: "Net Profit", value: netProfit, color: netProfit >= 0 ? "text-teal-600 dark:text-teal-400" : "text-red-600 dark:text-red-400", bg: netProfit >= 0 ? "bg-teal-50 dark:bg-teal-950/40 border-teal-200 dark:border-teal-700/40" : "bg-red-50 dark:bg-red-950/40 border-red-200 dark:border-red-700/40", icon: "📈" },
         ].map((k) => (
           <div key={k.label} className={`rounded-2xl border p-5 shadow-sm ${k.bg}`}>
             <div className="mb-2 text-2xl">{k.icon}</div>
-            <p className="text-xs text-stone-500">{k.label}</p>
+            <p className="text-xs text-stone-500 dark:text-slate-400">{k.label}</p>
             <p className={`text-xl font-bold ${k.color}`}>ETB {fmt(k.value)}</p>
           </div>
         ))}
@@ -113,10 +113,10 @@ export default async function ReportsPage() {
           { label: "COGS Ratio", value: grossRevenue > 0 ? `${((totalCOGS / grossRevenue) * 100).toFixed(1)}%` : "N/A", sub: "Cost of goods sold vs revenue" },
           { label: "Expense Ratio", value: grossRevenue > 0 ? `${((totalExpenses / grossRevenue) * 100).toFixed(1)}%` : "N/A", sub: "Operating expenses vs revenue" },
         ].map((k) => (
-          <div key={k.label} className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm">
-            <p className="text-xs text-stone-500 mb-1">{k.label}</p>
-            <p className="text-2xl font-bold text-stone-900">{k.value}</p>
-            <p className="text-xs text-stone-400 mt-1">{k.sub}</p>
+          <div key={k.label} className="rounded-2xl border border-stone-200 dark:border-[#222d42] bg-white dark:bg-[#151c2c] p-4 shadow-sm">
+            <p className="text-xs text-stone-500 dark:text-slate-400 mb-1">{k.label}</p>
+            <p className="text-2xl font-bold text-stone-900 dark:text-white">{k.value}</p>
+            <p className="text-xs text-stone-400 dark:text-slate-500 mt-1">{k.sub}</p>
           </div>
         ))}
       </div>
@@ -124,8 +124,8 @@ export default async function ReportsPage() {
       {/* Weekly Breakdown + P&L */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Weekly Bar Chart */}
-        <div className="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm">
-          <h2 className="font-semibold text-stone-800 mb-4">Weekly Revenue vs Costs</h2>
+        <div className="rounded-2xl border border-stone-200 dark:border-[#222d42] bg-white dark:bg-[#151c2c] p-5 shadow-sm">
+          <h2 className="font-semibold text-stone-800 dark:text-white mb-4">Weekly Revenue vs Costs</h2>
           <div className="flex items-end gap-3 h-32">
             {weeks.map((w, i) => {
               const revH = Math.round((w.revenue / maxWeekRevenue) * 100);
@@ -134,22 +134,22 @@ export default async function ReportsPage() {
                 <div key={i} className="flex-1 flex flex-col items-center gap-1">
                   <div className="w-full flex items-end justify-center gap-0.5">
                     <div className="rounded-t-lg bg-teal-400" style={{ width: "45%", height: `${revH}px`, minHeight: "2px" }} title={`Revenue: ETB ${fmt(w.revenue)}`} />
-                    <div className="rounded-t-lg bg-red-300" style={{ width: "45%", height: `${costH}px`, minHeight: "2px" }} title={`Costs: ETB ${fmt(w.cogs + w.expenses)}`} />
+                    <div className="rounded-t-lg bg-red-300 dark:bg-red-500" style={{ width: "45%", height: `${costH}px`, minHeight: "2px" }} title={`Costs: ETB ${fmt(w.cogs + w.expenses)}`} />
                   </div>
-                  <span className="text-[9px] text-stone-400">{w.label}</span>
+                  <span className="text-[9px] text-stone-400 dark:text-slate-500">{w.label}</span>
                 </div>
               );
             })}
           </div>
-          <div className="mt-3 flex items-center gap-4 text-xs text-stone-500">
+          <div className="mt-3 flex items-center gap-4 text-xs text-stone-500 dark:text-slate-400">
             <div className="flex items-center gap-1.5"><div className="h-2.5 w-2.5 rounded bg-teal-400" />Revenue</div>
-            <div className="flex items-center gap-1.5"><div className="h-2.5 w-2.5 rounded bg-red-300" />COGS + Expenses</div>
+            <div className="flex items-center gap-1.5"><div className="h-2.5 w-2.5 rounded bg-red-300 dark:bg-red-500" />COGS + Expenses</div>
           </div>
         </div>
 
         {/* P&L Statement */}
-        <div className="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm">
-          <h2 className="font-semibold text-stone-800 mb-4">P&L Summary — This Month</h2>
+        <div className="rounded-2xl border border-stone-200 dark:border-[#222d42] bg-white dark:bg-[#151c2c] p-5 shadow-sm">
+          <h2 className="font-semibold text-stone-800 dark:text-white mb-4">P&amp;L Summary — This Month</h2>
           <div className="space-y-2">
             {[
               { label: "Gross Revenue", value: grossRevenue, type: "revenue" },
@@ -161,16 +161,16 @@ export default async function ReportsPage() {
               { label: "", value: 0, type: "divider" },
               { label: "Net Profit", value: netProfit, type: netProfit >= 0 ? "profit" : "loss", bold: true },
             ].map((row, i) => {
-              if (row.type === "divider") return <div key={i} className="h-px bg-stone-100 my-2" />;
+              if (row.type === "divider") return <div key={i} className="h-px bg-stone-100 dark:bg-[#1e2638] my-2" />;
               return (
                 <div key={i} className={`flex items-center justify-between py-1 ${row.bold ? "font-semibold" : ""}`}>
-                  <span className={`text-sm ${row.bold ? "text-stone-900" : "text-stone-600"}`}>{row.label}</span>
+                  <span className={`text-sm ${row.bold ? "text-stone-900 dark:text-white" : "text-stone-600 dark:text-slate-400"}`}>{row.label}</span>
                   <span className={`text-sm ${
-                    row.type === "revenue" ? "text-emerald-600" :
-                    row.type === "cost" ? "text-red-600" :
-                    row.type === "profit" ? "text-teal-700 text-base" :
-                    row.type === "loss" ? "text-red-700 text-base" :
-                    "text-stone-900"
+                    row.type === "revenue" ? "text-emerald-600 dark:text-emerald-400" :
+                    row.type === "cost" ? "text-red-600 dark:text-red-400" :
+                    row.type === "profit" ? "text-teal-700 dark:text-teal-400 text-base" :
+                    row.type === "loss" ? "text-red-700 dark:text-red-400 text-base" :
+                    "text-stone-900 dark:text-white"
                   } ${row.bold ? "font-bold" : ""}`}>
                     ETB {fmt(Math.abs(row.value))}
                   </span>
@@ -182,45 +182,45 @@ export default async function ReportsPage() {
       </div>
 
       {/* Weekly Detail Table */}
-      <div className="rounded-2xl border border-stone-200 bg-white shadow-sm overflow-hidden">
-        <div className="px-5 py-4 border-b border-stone-100">
-          <h2 className="font-semibold text-stone-800">Weekly Breakdown</h2>
+      <div className="rounded-2xl border border-stone-200 dark:border-[#222d42] bg-white dark:bg-[#151c2c] shadow-sm overflow-hidden">
+        <div className="px-5 py-4 border-b border-stone-100 dark:border-[#1e2638]">
+          <h2 className="font-semibold text-stone-800 dark:text-white">Weekly Breakdown</h2>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-stone-50 border-b border-stone-200">
+            <thead className="bg-stone-50 dark:bg-[#1c253b] border-b border-stone-200 dark:border-[#222d42]">
               <tr>
-                <th className="px-5 py-3 text-left font-semibold text-stone-600 text-xs uppercase tracking-wider">Week</th>
-                <th className="px-5 py-3 text-right font-semibold text-stone-600 text-xs uppercase tracking-wider">Revenue</th>
-                <th className="px-5 py-3 text-right font-semibold text-stone-600 text-xs uppercase tracking-wider">COGS</th>
-                <th className="px-5 py-3 text-right font-semibold text-stone-600 text-xs uppercase tracking-wider">Expenses</th>
-                <th className="px-5 py-3 text-right font-semibold text-stone-600 text-xs uppercase tracking-wider">Net</th>
-                <th className="px-5 py-3 text-right font-semibold text-stone-600 text-xs uppercase tracking-wider">Margin</th>
+                <th className="px-5 py-3 text-left font-semibold text-stone-600 dark:text-slate-400 text-xs uppercase tracking-wider">Week</th>
+                <th className="px-5 py-3 text-right font-semibold text-stone-600 dark:text-slate-400 text-xs uppercase tracking-wider">Revenue</th>
+                <th className="px-5 py-3 text-right font-semibold text-stone-600 dark:text-slate-400 text-xs uppercase tracking-wider">COGS</th>
+                <th className="px-5 py-3 text-right font-semibold text-stone-600 dark:text-slate-400 text-xs uppercase tracking-wider">Expenses</th>
+                <th className="px-5 py-3 text-right font-semibold text-stone-600 dark:text-slate-400 text-xs uppercase tracking-wider">Net</th>
+                <th className="px-5 py-3 text-right font-semibold text-stone-600 dark:text-slate-400 text-xs uppercase tracking-wider">Margin</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-stone-100">
+            <tbody className="divide-y divide-stone-100 dark:divide-[#1e2638]">
               {weeks.map((w, i) => {
                 const net = w.revenue - w.cogs - w.expenses;
                 const margin = w.revenue > 0 ? ((net / w.revenue) * 100).toFixed(1) : "N/A";
                 return (
-                  <tr key={i} className="hover:bg-stone-50 transition-colors">
-                    <td className="px-5 py-3 font-medium text-stone-800">{w.label}</td>
-                    <td className="px-5 py-3 text-right text-emerald-600 font-semibold">ETB {fmt(w.revenue)}</td>
-                    <td className="px-5 py-3 text-right text-red-500">ETB {fmt(w.cogs)}</td>
-                    <td className="px-5 py-3 text-right text-orange-500">ETB {fmt(w.expenses)}</td>
-                    <td className={`px-5 py-3 text-right font-bold ${net >= 0 ? "text-teal-600" : "text-red-600"}`}>ETB {fmt(net)}</td>
-                    <td className={`px-5 py-3 text-right text-sm ${Number(margin) >= 0 ? "text-teal-600" : "text-red-500"}`}>{margin}{margin !== "N/A" ? "%" : ""}</td>
+                  <tr key={i} className="hover:bg-stone-50 dark:hover:bg-[#1c253b]/50 transition-colors">
+                    <td className="px-5 py-3 font-medium text-stone-800 dark:text-slate-200">{w.label}</td>
+                    <td className="px-5 py-3 text-right text-emerald-600 dark:text-emerald-400 font-semibold">ETB {fmt(w.revenue)}</td>
+                    <td className="px-5 py-3 text-right text-red-500 dark:text-red-400">ETB {fmt(w.cogs)}</td>
+                    <td className="px-5 py-3 text-right text-orange-500 dark:text-orange-400">ETB {fmt(w.expenses)}</td>
+                    <td className={`px-5 py-3 text-right font-bold ${net >= 0 ? "text-teal-600 dark:text-teal-400" : "text-red-600 dark:text-red-400"}`}>ETB {fmt(net)}</td>
+                    <td className={`px-5 py-3 text-right text-sm ${Number(margin) >= 0 ? "text-teal-600 dark:text-teal-400" : "text-red-500 dark:text-red-400"}`}>{margin}{margin !== "N/A" ? "%" : ""}</td>
                   </tr>
                 );
               })}
               {/* Totals Row */}
-              <tr className="bg-stone-50 font-semibold border-t-2 border-stone-200">
-                <td className="px-5 py-3 text-stone-900">Month Total</td>
-                <td className="px-5 py-3 text-right text-emerald-700">ETB {fmt(grossRevenue)}</td>
-                <td className="px-5 py-3 text-right text-red-600">ETB {fmt(totalCOGS)}</td>
-                <td className="px-5 py-3 text-right text-orange-600">ETB {fmt(totalExpenses)}</td>
-                <td className={`px-5 py-3 text-right font-bold ${netProfit >= 0 ? "text-teal-700" : "text-red-700"}`}>ETB {fmt(netProfit)}</td>
-                <td className={`px-5 py-3 text-right ${Number(netMarginPct) >= 0 ? "text-teal-700" : "text-red-700"}`}>{netMarginPct}%</td>
+              <tr className="bg-stone-50 dark:bg-[#1c253b] font-semibold border-t-2 border-stone-200 dark:border-[#222d42]">
+                <td className="px-5 py-3 text-stone-900 dark:text-white">Month Total</td>
+                <td className="px-5 py-3 text-right text-emerald-700 dark:text-emerald-400">ETB {fmt(grossRevenue)}</td>
+                <td className="px-5 py-3 text-right text-red-600 dark:text-red-400">ETB {fmt(totalCOGS)}</td>
+                <td className="px-5 py-3 text-right text-orange-600 dark:text-orange-400">ETB {fmt(totalExpenses)}</td>
+                <td className={`px-5 py-3 text-right font-bold ${netProfit >= 0 ? "text-teal-700 dark:text-teal-400" : "text-red-700 dark:text-red-400"}`}>ETB {fmt(netProfit)}</td>
+                <td className={`px-5 py-3 text-right ${Number(netMarginPct) >= 0 ? "text-teal-700 dark:text-teal-400" : "text-red-700 dark:text-red-400"}`}>{netMarginPct}%</td>
               </tr>
             </tbody>
           </table>
@@ -229,14 +229,14 @@ export default async function ReportsPage() {
 
       {/* Payment Methods */}
       {Object.keys(payByMethod).length > 0 && (
-        <div className="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm">
-          <h2 className="font-semibold text-stone-800 mb-4">Revenue by Payment Method</h2>
+        <div className="rounded-2xl border border-stone-200 dark:border-[#222d42] bg-white dark:bg-[#151c2c] p-5 shadow-sm">
+          <h2 className="font-semibold text-stone-800 dark:text-white mb-4">Revenue by Payment Method</h2>
           <div className="flex flex-wrap gap-4">
             {Object.entries(payByMethod).map(([method, total]) => (
-              <div key={method} className="rounded-xl bg-stone-50 border border-stone-100 px-5 py-3">
-                <p className="text-xs text-stone-500">{method}</p>
-                <p className="text-lg font-bold text-stone-900">ETB {fmt(total)}</p>
-                <p className="text-xs text-stone-400">{grossRevenue > 0 ? ((total / grossRevenue) * 100).toFixed(1) : 0}%</p>
+              <div key={method} className="rounded-xl bg-stone-50 dark:bg-[#1c253b] border border-stone-100 dark:border-[#25324d] px-5 py-3">
+                <p className="text-xs text-stone-500 dark:text-slate-400">{method}</p>
+                <p className="text-lg font-bold text-stone-900 dark:text-white">ETB {fmt(total)}</p>
+                <p className="text-xs text-stone-400 dark:text-slate-500">{grossRevenue > 0 ? ((total / grossRevenue) * 100).toFixed(1) : 0}%</p>
               </div>
             ))}
           </div>
@@ -245,4 +245,3 @@ export default async function ReportsPage() {
     </div>
   );
 }
-
